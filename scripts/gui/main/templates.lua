@@ -182,6 +182,14 @@ function templates.topic_contents(topic)
   }
 end
 
+function templates.no_topic_area()
+  return {
+    type = "frame",
+    style = "the418_kb__content_frame",
+    direction = "vertical",
+  }
+end
+
 --- @param id number
 --- @param caption string
 --- @param level number

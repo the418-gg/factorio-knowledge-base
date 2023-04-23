@@ -30,6 +30,8 @@ function helpers.build_selected_topic_contents(Gui)
   if Gui.state.selected_topic_id then
     local Topic = global.topics[Gui.state.selected_topic_id]
     gui.add(Gui.refs.current_topic_contents, templates.topic_contents(Topic))
+  else
+    gui.add(Gui.refs.current_topic_contents, templates.no_topic_area())
   end
 end
 
