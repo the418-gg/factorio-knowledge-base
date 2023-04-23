@@ -12,6 +12,6 @@ for i, player_table in pairs(global.players) do
     player.opened.destroy()
     player.opened = nil
   end
-
-  migrations.generic()
 end
+
+migrations.generic()
