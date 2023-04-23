@@ -3,6 +3,7 @@ Version: 0.2.0
 Date: ?
   Minor Features:
     - [Add topic] and [Edit topic] buttons now have a hover state
+    - Multi-line text support
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.2
 Date: 23. 04. 2023

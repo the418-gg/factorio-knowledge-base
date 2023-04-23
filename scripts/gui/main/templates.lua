@@ -174,6 +174,9 @@ function templates.topic_contents(topic)
       {
         type = "label",
         caption = topic.body,
+        style_mods = {
+          single_line = false,
+        },
       },
     },
   }
