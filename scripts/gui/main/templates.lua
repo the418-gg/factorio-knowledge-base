@@ -1,11 +1,12 @@
 local templates = {}
 
---- @class MainGuiRefs
+--- @class TopicsGuiRefs
 --- @field window LuaGuiElement
 --- @field titlebar_flow LuaGuiElement
 --- @field topic_navigation LuaGuiElement
 --- @field current_topic_contents LuaGuiElement
 
+--- @return TopicsGuiRefs
 function templates.render()
   return {
     {
@@ -14,6 +15,7 @@ function templates.render()
       style_mods = { height = 800 },
       direction = "vertical",
       ref = { "window" },
+      visible = false,
       actions = {
         on_closed = { gui = "topics", action = "close" },
       },
@@ -30,8 +32,11 @@ function templates.render()
           caption = { "gui.the418-kb--main-title" },
           ignored_by_interaction = true,
         },
-        { type = "empty-widget", style = "flib_titlebar_drag_handle",
-          ignored_by_interaction = true },
+        {
+          type = "empty-widget",
+          style = "flib_titlebar_drag_handle",
+          ignored_by_interaction = true,
+        },
         -- {
         --   type = "sprite-button",
         --   tooltip = { "gui.flib-keep-open" },
@@ -97,7 +102,7 @@ function templates.render()
                 font = "default-semibold",
               },
               actions = {
-                on_click = { gui = "topics", action = "add-topic" },
+                on_click = { gui = "topics", action = "add_topic" },
               },
             },
           },
@@ -156,7 +161,9 @@ function templates.topic_contents(topic)
         },
         actions = {
           on_click = {
-            gui = "topics", action = "edit-topic", topic_id = topic.id,
+            gui = "topics",
+            action = "edit_topic",
+            topic_id = topic.id,
           },
         },
       },
@@ -185,8 +192,9 @@ end
 function templates.topic_button(id, caption, level, is_selected)
   return {
     type = "button",
-    style = "the418_kb__menu_button" ..
-    (level == 1 and "_primary" or "") .. (is_selected and "_selected" or ""),
+    style = "the418_kb__menu_button"
+      .. (level == 1 and "_primary" or "")
+      .. (is_selected and "_selected" or ""),
     caption = caption,
     style_mods = {
       left_padding = level * 8,
