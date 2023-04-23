@@ -96,11 +96,8 @@ function templates.render()
             },
             {
               type = "label",
-              style = "info_label",
+              style = "the418_kb__label_button",
               caption = { "", "[", { "gui.the418-kb--add-topic" }, "]" },
-              style_mods = {
-                font = "default-semibold",
-              },
               actions = {
                 on_click = { gui = "topics", action = "add_topic" },
               },
@@ -154,11 +151,8 @@ function templates.topic_contents(topic)
       },
       {
         type = "label",
-        style = "info_label",
+        style = "the418_kb__label_button",
         caption = { "", "[", { "gui.the418-kb--edit-topic" }, "]" },
-        style_mods = {
-          font = "default-semibold",
-        },
         actions = {
           on_click = {
             gui = "topics",

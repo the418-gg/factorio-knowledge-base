@@ -16,13 +16,21 @@ end
 function player_data.refresh(player, player_table)
   local TopicsGui = player_table.guis.topics
   if TopicsGui then
-    TopicsGui:destroy()
+    if getmetatable(TopicsGui) then
+      TopicsGui:destroy()
+    else
+      TopicsGui.refs.window.destroy()
+    end
   end
   topics_gui_index.new(player, player_table)
 
   local EditTopicsGui = player_table.guis.edit_topic
   if EditTopicsGui then
-    EditTopicsGui:destroy()
+    if getmetatable(EditTopicsGui) then
+      EditTopicsGui:destroy()
+    else
+      EditTopicsGui.refs.window.destroy()
+    end
   end
 end
 
