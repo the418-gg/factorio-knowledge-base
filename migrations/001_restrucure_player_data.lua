@@ -7,11 +7,6 @@ for i, player_table in pairs(global.players) do
 
   local player = game.get_player(i) --[[@as LuaPlayer]]
   player_data.init(player)
-
-  if player.opened and player.opened.get_mod() == "the418_kb" then
-    player.opened.destroy()
-    player.opened = nil
-  end
 end
 
 migrations.generic()

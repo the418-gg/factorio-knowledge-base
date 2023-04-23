@@ -1,6 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.1
+Date: 24. 04. 2023
+  Bugfixes:
+    - Fixed migrations not being correctly applied in certain conditions
+    - Fixed desync issues in multiplayer
+---------------------------------------------------------------------------------------------------
 Version: 0.2.0
-Date: ?
+Date: 23. 04. 2023
   Minor Features:
     - [Add topic] and [Edit topic] buttons now have a hover state
     - Multi-line text support

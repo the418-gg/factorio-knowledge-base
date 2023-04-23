@@ -48,6 +48,7 @@ end)
 script.on_event(defines.events.on_player_created, function(event)
   local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
   player_data.init(player)
+  player_data.refresh(player, global.players[event.player_index])
 end)
 
 script.on_event("the418-kb--toggle-interface", function(event)

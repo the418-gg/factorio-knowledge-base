@@ -39,7 +39,6 @@ end
 --- @param Gui TopicsGui
 function index.load(Gui)
   setmetatable(Gui, { __index = TopicsGui })
-  Gui:update()
 end
 
 return index
