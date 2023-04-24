@@ -27,12 +27,17 @@ function player_data.refresh(player, player_table)
   local EditTopicsGui = player_table.guis.edit_topic
   if EditTopicsGui and getmetatable(EditTopicsGui) then
     EditTopicsGui:destroy()
-    EditTopicsGui.refs.window.destroy()
+  end
+
+  local ConfirmDeleteTopicGui = player_table.guis.confirm_delete_topic
+  if ConfirmDeleteTopicGui and getmetatable(ConfirmDeleteTopicGui) then
+    ConfirmDeleteTopicGui:destroy()
   end
 end
 
 --- @class PlayerGuis
 --- @field topics TopicsGui?
 --- @field edit_topic EditTopicsGui?
+--- @field confirm_delete_topic ConfirmDeleteTopicGui?
 
 return player_data

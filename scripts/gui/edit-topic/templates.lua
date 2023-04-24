@@ -13,8 +13,8 @@ local templates = {}
 --- @param topic Topic?
 --- @param available_parents Topic[]
 function templates.render(topic, available_parents)
-  local title_caption = topic and { "gui.the418-kb--caption-edit-topic" } or
-      { "gui.the418-kb--caption-new-topic" }
+  local title_caption = topic and { "gui.the418-kb--caption-edit-topic" }
+    or { "gui.the418-kb--caption-new-topic" }
   local parents = { { "gui.the418-kb--parent-root" } }
   local parent_selection_index = 1
 
@@ -33,6 +33,7 @@ function templates.render(topic, available_parents)
       style_mods = { width = 448 },
       direction = "vertical",
       ref = { "window" },
+      visible = true,
       actions = {
         on_closed = { gui = "edit_topic", action = "close" },
       },
@@ -88,7 +89,7 @@ function templates.render(topic, available_parents)
           {
             type = "flow",
             style_mods = { vertical_align = "center" },
-            { type = "label",        caption = { "gui.the418-kb--parent" } },
+            { type = "label", caption = { "gui.the418-kb--parent" } },
             { type = "empty-widget", style = "flib_horizontal_pusher" },
             {
               type = "drop-down",
@@ -104,7 +105,8 @@ function templates.render(topic, available_parents)
         type = "flow",
         style = "dialog_buttons_horizontal_flow",
         actions = {
-          on_click = { gui = "edit_topic", transform = "handle_titlebar_click" } },
+          on_click = { gui = "edit_topic", transform = "handle_titlebar_click" },
+        },
         ref = { "footer_flow" },
         {
           type = "button",

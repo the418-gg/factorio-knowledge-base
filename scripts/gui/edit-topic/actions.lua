@@ -1,11 +1,17 @@
 local topic = require("__the418_kb__/scripts/topic")
 local util = require("__the418_kb__/scripts/util")
 local player_gui = require("__the418_kb__/scripts/player-gui")
+local confirm_delete_topic_index = require("__the418_kb__/scripts/gui/confirm-delete-topic/index")
 
 local actions = {}
 
 --- @param Gui EditTopicsGui
 function actions.close(Gui)
+  if Gui.state.prevent_close then
+    Gui.state.prevent_close = false
+    return
+  end
+
   local Topic = Gui.state.topic
   if Topic then
     Topic:unlock()
@@ -88,10 +94,9 @@ function actions.delete(Gui)
     end
   end
 
-  Gui.state.topic:delete()
-
-  player_gui.update_all_topics()
-  Gui:destroy()
+  Gui:hide()
+  Gui.state.prevent_close = true
+  confirm_delete_topic_index.new(Gui.player, Gui.player_table, Topic, Gui)
 end
 
 return actions

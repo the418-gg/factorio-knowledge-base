@@ -7,6 +7,8 @@ local player_gui = require("__the418_kb__/scripts/player-gui")
 local topic = require("__the418_kb__/scripts/topic")
 local topics_gui_index = require("__the418_kb__/scripts/gui/main/index")
 local edit_topic_gui_index = require("__the418_kb__/scripts/gui/edit-topic/index")
+local confirm_delete_topic_gui_index =
+  require("__the418_kb__/scripts/gui/confirm-delete-topic/index")
 
 script.on_init(function()
   global.public = {
@@ -36,6 +38,10 @@ script.on_load(function()
     topics_gui_index.load(player_table.guis.topics)
     if player_table.guis.edit_topic then
       edit_topic_gui_index.load(player_table.guis.edit_topic)
+    end
+
+    if player_table.guis.confirm_delete_topic then
+      confirm_delete_topic_gui_index.load(player_table.guis.confirm_delete_topic)
     end
   end
 end)
