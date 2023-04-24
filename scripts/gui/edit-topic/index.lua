@@ -28,6 +28,7 @@ end
 --- @param player_table PlayerTable
 --- @param Topic Topic?
 --- @param ParentGui TopicsGui
+--- @return EditTopicsGui
 function index.new(player, player_table, Topic, ParentGui)
   local available_parents = make_available_parents(global.public.top_level_topic_ids, Topic)
 
@@ -49,8 +50,8 @@ function index.new(player, player_table, Topic, ParentGui)
       available_parents = available_parents,
       selected_parent_index = refs.parent_dropdown.selected_index,
       topic = Topic and Topic or nil,
-      is_visible = true,
-      prevent_close = false,
+      is_visible = false,
+      child = nil, --- @type ConfirmDeleteTopicGui?
     },
   }
 
@@ -64,9 +65,9 @@ function index.new(player, player_table, Topic, ParentGui)
 
   player_table.guis.edit_topic = self
 
-  player.opened = refs.window
   refs.title_textfield.select_all()
   refs.title_textfield.focus()
+  return self
 end
 
 --- @param Gui EditTopicsGui

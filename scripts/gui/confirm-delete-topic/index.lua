@@ -8,6 +8,7 @@ local index = {}
 --- @param player_table PlayerTable
 --- @param Topic Topic
 --- @param ParentGui EditTopicsGui
+--- @return ConfirmDeleteTopicGui
 function index.new(player, player_table, Topic, ParentGui)
   --- @type ConfirmDeleteTopicGuiRefs
   local refs = gui.build(player.gui.screen, templates.render(Topic))
@@ -22,6 +23,7 @@ function index.new(player, player_table, Topic, ParentGui)
     parent = ParentGui,
     --- @class ConfirmDeleteTopicGuiState
     state = {
+      is_visible = false,
       topic = Topic,
     },
   }
@@ -29,7 +31,7 @@ function index.new(player, player_table, Topic, ParentGui)
   setmetatable(self, { __index = ConfirmDeleteTopicGui })
 
   player_table.guis.confirm_delete_topic = self
-  player.opened = refs.window
+  return self
 end
 
 --- @param Gui ConfirmDeleteTopicGui

@@ -33,7 +33,7 @@ function templates.render(topic, available_parents)
       style_mods = { width = 448 },
       direction = "vertical",
       ref = { "window" },
-      visible = true,
+      visible = false,
       actions = {
         on_closed = { gui = "edit_topic", action = "close" },
       },

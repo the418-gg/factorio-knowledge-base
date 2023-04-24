@@ -6,8 +6,7 @@ local actions = {}
 
 --- @param Gui TopicsGui
 function actions.close(Gui)
-  if Gui.state.prevent_close then
-    Gui.state.prevent_close = false
+  if Gui.state.child then
     return
   end
   Gui:close()
@@ -19,6 +18,13 @@ function actions.toggle(Gui)
 end
 
 --- @param Gui TopicsGui
+function actions.click(Gui)
+  if Gui.state.child then
+    Gui.state.child.refs.window.bring_to_front()
+  end
+end
+
+--- @param Gui TopicsGui
 --- @param msg {topic_id: uint}
 function actions.select(Gui, msg)
   Gui:select_topic(msg.topic_id)
@@ -27,8 +33,9 @@ end
 --- @param Gui TopicsGui
 function actions.add_topic(Gui)
   if not player_gui.get_gui(Gui.player.index, "edit_topic") then
-    Gui.state.prevent_close = true
-    edit_topic_gui_index.new(Gui.player, Gui.player_table, nil, Gui)
+    local EditTopicGui = edit_topic_gui_index.new(Gui.player, Gui.player_table, nil, Gui)
+    Gui.state.child = EditTopicGui
+    EditTopicGui:show()
   end
 end
 
@@ -43,8 +50,9 @@ function actions.edit_topic(Gui, msg)
   end
 
   if not player_gui.get_gui(Gui.player.index, "edit_topic") then
-    Gui.state.prevent_close = true
-    edit_topic_gui_index.new(Gui.player, Gui.player_table, Topic, Gui)
+    local EditTopicGui = edit_topic_gui_index.new(Gui.player, Gui.player_table, Topic, Gui)
+    Gui.state.child = EditTopicGui
+    EditTopicGui:show()
   end
 end
 

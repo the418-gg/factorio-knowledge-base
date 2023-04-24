@@ -7,8 +7,7 @@ local actions = {}
 
 --- @param Gui EditTopicsGui
 function actions.close(Gui)
-  if Gui.state.prevent_close then
-    Gui.state.prevent_close = false
+  if Gui.state.child then
     return
   end
 
@@ -19,6 +18,7 @@ function actions.close(Gui)
 
   player_gui.update_all_topics()
   Gui:destroy()
+  Gui.parent.state.child = nil
 end
 
 --- @param Gui EditTopicsGui
@@ -95,8 +95,9 @@ function actions.delete(Gui)
   end
 
   Gui:hide()
-  Gui.state.prevent_close = true
-  confirm_delete_topic_index.new(Gui.player, Gui.player_table, Topic, Gui)
+  local ConfirmGui = confirm_delete_topic_index.new(Gui.player, Gui.player_table, Topic, Gui)
+  Gui.state.child = ConfirmGui
+  ConfirmGui:show()
 end
 
 return actions

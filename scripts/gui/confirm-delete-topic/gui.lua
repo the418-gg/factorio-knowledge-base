@@ -5,7 +5,15 @@ local ConfirmDeleteTopicGui = {}
 
 ConfirmDeleteTopicGui.actions = actions
 
+function ConfirmDeleteTopicGui:show()
+  self.refs.window.bring_to_front()
+  self.refs.window.visible = true
+  self.state.is_visible = true
+  self.player.opened = self.refs.window
+end
+
 function ConfirmDeleteTopicGui:destroy()
+  self.parent.state.child = nil
   local window = self.refs.window
 
   if window and window.valid then

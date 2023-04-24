@@ -25,7 +25,7 @@ function index.new(player, player_table)
     --- @class TopicsGuiState
     state = {
       is_visible = false,
-      prevent_close = false,
+      child = nil, --- @type EditTopicsGui?
       selected_topic_id = selected_topic_id,
     },
   }

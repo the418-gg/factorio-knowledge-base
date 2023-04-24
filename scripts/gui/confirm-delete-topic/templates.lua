@@ -14,6 +14,7 @@ function templates.render(Topic)
       style_mods = { width = 448 },
       direction = "vertical",
       ref = { "window" },
+      visible = false,
       actions = {
         on_closed = { gui = "confirm_delete_topic", action = "close" },
       },

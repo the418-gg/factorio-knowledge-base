@@ -18,6 +18,7 @@ function EditTopicsGui:hide()
 end
 
 function EditTopicsGui:destroy()
+  self.parent.state.child = nil
   local window = self.refs.window
 
   if window and window.valid then
