@@ -13,4 +13,13 @@ function player_gui.get_gui(player_index, gui_name)
   end
 end
 
+function player_gui.update_all_topics()
+  for _, player_table in pairs(global.players) do
+    local Gui = player_table.guis.topics
+    if Gui then
+      Gui:update()
+    end
+  end
+end
+
 return player_gui

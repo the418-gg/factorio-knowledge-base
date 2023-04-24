@@ -1,10 +1,17 @@
 local topic = require("__the418_kb__/scripts/topic")
 local util = require("__the418_kb__/scripts/util")
+local player_gui = require("__the418_kb__/scripts/player-gui")
 
 local actions = {}
 
 --- @param Gui EditTopicsGui
 function actions.close(Gui)
+  local Topic = Gui.state.topic
+  if Topic then
+    Topic:unlock()
+  end
+
+  player_gui.update_all_topics()
   Gui:destroy()
 end
 
@@ -41,6 +48,8 @@ function actions.confirm(Gui, msg)
         NewParent:add_child(Topic.id)
       end
     end
+
+    Topic:unlock()
   else
     local NewTopic = topic.new(Gui.refs.title_textfield.text, Gui.refs.body_textfield.text)
 
@@ -54,7 +63,7 @@ function actions.confirm(Gui, msg)
     end
   end
 
-  Gui.parent:update()
+  player_gui.update_all_topics()
 
   -- HACK pressing "E" to confirm will close the GUI that's currently open
   if msg.from == "custom-input" then
@@ -66,9 +75,22 @@ end
 
 --- @param Gui EditTopicsGui
 function actions.delete(Gui)
+  -- If any child topic is currently locked, cannot delete
+  local Topic = Gui.state.topic --[[@as Topic]]
+  for _, ChildTopic in pairs(Topic:get_children()) do
+    local Lock = ChildTopic:get_lock()
+    if Lock then
+      util.error_text(
+        Gui.player,
+        { "message.the418-kb--cannot-delete-child-is-locked", ChildTopic.title, Lock.player.name }
+      )
+      return
+    end
+  end
+
   Gui.state.topic:delete()
 
-  Gui.parent:update()
+  player_gui.update_all_topics()
   Gui:destroy()
 end
 

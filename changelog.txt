@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 24. 04. 2023
+  Features:
+    - Introduced locks to topics: when a player is editing a topic, other players are not able to edit that topic at the same time.
+---------------------------------------------------------------------------------------------------
 Version: 0.2.1
 Date: 24. 04. 2023
   Bugfixes:

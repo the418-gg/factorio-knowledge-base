@@ -122,8 +122,10 @@ function templates.render()
   }
 end
 
---- @param topic Topic
-function templates.topic_contents(topic)
+--- @param Topic Topic
+function templates.topic_contents(Topic)
+  local Lock = Topic:get_lock()
+
   return {
     type = "frame",
     style = "the418_kb__content_frame",
@@ -143,7 +145,7 @@ function templates.topic_contents(topic)
         style_mods = {
           font = "heading-2",
         },
-        caption = topic.title,
+        caption = Topic.title,
       },
       {
         type = "empty-widget",
@@ -151,13 +153,15 @@ function templates.topic_contents(topic)
       },
       {
         type = "label",
-        style = "the418_kb__label_button",
-        caption = { "", "[", { "gui.the418-kb--edit-topic" }, "]" },
+        style = Lock and "the418_kb__label_button_disabled" or "the418_kb__label_button",
+        caption = Lock
+            and { "", "[", { "gui.the418-kb--topic-being-edited-by", Lock.player.name }, "]" }
+          or { "", "[", { "gui.the418-kb--edit-topic" }, "]" },
         actions = {
           on_click = {
             gui = "topics",
             action = "edit_topic",
-            topic_id = topic.id,
+            topic_id = Topic.id,
           },
         },
       },
@@ -173,7 +177,7 @@ function templates.topic_contents(topic)
       },
       {
         type = "label",
-        caption = topic.body,
+        caption = Topic.body,
         style_mods = {
           single_line = false,
         },

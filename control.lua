@@ -1,5 +1,6 @@
 local gui = require("__flib__/gui")
 
+local constants = require("__the418_kb__/constants")
 local migrations = require("__the418_kb__/scripts/migrations")
 local player_data = require("__the418_kb__/scripts/player-data")
 local player_gui = require("__the418_kb__/scripts/player-gui")
@@ -69,8 +70,45 @@ script.on_event("the418-kb--linked-confirm-gui", function(event)
   end
 end)
 
+script.on_event(defines.events.on_tick, function(event)
+  if event.tick % constants.topic_lock_update_interval ~= 0 then
+    return
+  end
+
+  -- Update topic locks
+  for _, Topic in pairs(global.topics) do
+    local Lock = Topic:get_lock()
+    if Lock then
+      if Lock.player.connected then
+        -- Player is connected, update lock to reflect current tick
+        Lock.tick = event.tick
+      else
+        -- Player is not connected, drop lock
+        Topic:unlock()
+
+        -- Clean up GUI
+        local player_table = global.players[Lock.player.index]
+        local Gui = player_table.guis.edit_topic
+        if Gui then
+          Gui:destroy()
+        end
+
+        -- Update GUI for all players
+        player_gui.update_all_topics()
+      end
+    end
+  end
+end)
+
 script.on_event(defines.events.on_player_removed, function(event)
   global.players[event.player_index] = nil
+
+  for _, Topic in pairs(global.topics) do
+    local Lock = Topic:get_lock()
+    if Lock and Lock.player.index == event.player_index then
+      Topic:unlock()
+    end
+  end
 end)
 
 gui.hook_events(function(e)
