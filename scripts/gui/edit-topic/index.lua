@@ -1,28 +1,10 @@
 local gui = require("__flib__/gui")
 local EditTopicsGui = require("__the418_kb__/scripts/gui/edit-topic/gui")
+local helpers = require("__the418_kb__/scripts/gui/edit-topic/helpers")
 local templates = require("__the418_kb__/scripts/gui/edit-topic/templates")
 local player_gui = require("__the418_kb__/scripts/player-gui")
 
 local index = {}
-
---- @param pool uint[]
---- @param Topic Topic?
---- @return Topic[]
-local function make_available_parents(pool, Topic)
-  local result = {}
-
-  for _, id in ipairs(pool) do
-    if not Topic or id ~= Topic.id then
-      local t = global.topics[id]
-      table.insert(result, t)
-      for _, v in ipairs(make_available_parents(t.child_ids, Topic)) do
-        table.insert(result, v)
-      end
-    end
-  end
-
-  return result
-end
 
 --- @param player LuaPlayer
 --- @param player_table PlayerTable
@@ -30,10 +12,15 @@ end
 --- @param ParentGui TopicsGui
 --- @return EditTopicsGui
 function index.new(player, player_table, Topic, ParentGui)
-  local available_parents = make_available_parents(global.public.top_level_topic_ids, Topic)
+  local available_parents = helpers.make_available_parents(global.public.top_level_topic_ids, Topic)
+  local gui_data = player_table.guis.topics
+  local currently_selected_topic_id = gui_data and gui_data.state.selected_topic_id or nil
 
   --- @type EditTopicGuiRefs
-  local refs = gui.build(player.gui.screen, templates.render(Topic, available_parents))
+  local refs = gui.build(
+    player.gui.screen,
+    templates.render(Topic, available_parents, currently_selected_topic_id)
+  )
 
   refs.window.force_auto_center()
   refs.titlebar_flow.drag_target = refs.window
