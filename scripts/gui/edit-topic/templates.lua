@@ -8,23 +8,15 @@ local templates = {}
 --- @field footer_flow LuaGuiElement
 --- @field title_textfield LuaGuiElement
 --- @field body_textfield LuaGuiElement
+--- @field parent_dropdown_container LuaGuiElement
 --- @field parent_dropdown LuaGuiElement
 
---- @param topic Topic?
+--- @param Topic Topic?
 --- @param available_parents Topic[]
-function templates.render(topic, available_parents)
-  local title_caption = topic and { "gui.the418-kb--caption-edit-topic" }
+--- @param currently_selected_topic_id integer?
+function templates.render(Topic, available_parents, currently_selected_topic_id)
+  local title_caption = Topic and { "gui.the418-kb--caption-edit-topic" }
     or { "gui.the418-kb--caption-new-topic" }
-  local parents = { { "gui.the418-kb--parent-root" } }
-  local parent_selection_index = 1
-
-  for _, parent in ipairs(available_parents) do
-    table.insert(parents, parent.title)
-
-    if topic and util.has_value(parent.child_ids, topic.id) then
-      parent_selection_index = #parents
-    end
-  end
 
   return {
     {
@@ -69,7 +61,7 @@ function templates.render(topic, available_parents)
             type = "textfield",
             style = "flib_widthless_textfield",
             style_mods = { horizontally_stretchable = true },
-            text = topic and topic.title or "",
+            text = Topic and Topic.title or "",
             ref = { "title_textfield" },
             actions = {
               on_confirmed = { gui = "edit_topic", action = "confirm" },
@@ -79,7 +71,7 @@ function templates.render(topic, available_parents)
           {
             type = "text-box",
             style_mods = { height = 200, width = 400 },
-            text = topic and topic.body or "",
+            text = Topic and Topic.body or "",
             elem_mods = { word_wrap = true },
             ref = { "body_textfield" },
             actions = {
@@ -92,11 +84,13 @@ function templates.render(topic, available_parents)
             { type = "label", caption = { "gui.the418-kb--parent" } },
             { type = "empty-widget", style = "flib_horizontal_pusher" },
             {
-              type = "drop-down",
-              items = parents,
-              selected_index = parent_selection_index,
-              enabled = #parents > 1,
-              ref = { "parent_dropdown" },
+              type = "flow",
+              ref = { "parent_dropdown_container" },
+              templates.render_parent_selector(
+                Topic,
+                available_parents,
+                currently_selected_topic_id
+              ),
             },
           },
         },
@@ -121,7 +115,7 @@ function templates.render(topic, available_parents)
           style = "flib_dialog_footer_drag_handle",
           ignored_by_interaction = true,
         },
-        topic and {
+        Topic and {
           type = "button",
           style = "the418_kb__red_dialog_button",
           caption = { "gui.delete" },
@@ -129,7 +123,7 @@ function templates.render(topic, available_parents)
             on_click = { gui = "edit_topic", action = "delete" },
           },
         } or {},
-        topic and {
+        Topic and {
           type = "empty-widget",
           style = "flib_dialog_footer_drag_handle",
           ignored_by_interaction = true,
@@ -144,6 +138,35 @@ function templates.render(topic, available_parents)
         },
       },
     },
+  }
+end
+
+--- @param Topic Topic?
+--- @param available_parents Topic[]
+--- @param currently_selected_topic_id integer?
+--- @return LuaGuiElement
+function templates.render_parent_selector(Topic, available_parents, currently_selected_topic_id)
+  local parents = { { "gui.the418-kb--parent-root" } }
+  local parent_selection_index = 1
+
+  for _, parent in ipairs(available_parents) do
+    table.insert(parents, parent.title)
+
+    if Topic then
+      if util.has_value(parent.child_ids, Topic.id) then
+        parent_selection_index = #parents
+      end
+    elseif parent.id == currently_selected_topic_id then
+      parent_selection_index = #parents
+    end
+  end
+
+  return {
+    type = "drop-down",
+    items = parents,
+    selected_index = parent_selection_index,
+    enabled = #parents > 1,
+    ref = { "parent_dropdown" },
   }
 end
 

@@ -40,6 +40,10 @@ function TopicsGui:update()
 
   helpers.build_topic_navigation(self)
   helpers.build_selected_topic_contents(self)
+
+  if self.state.child then
+    self.state.child:update()
+  end
 end
 
 function TopicsGui:toggle()

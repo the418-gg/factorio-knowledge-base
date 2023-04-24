@@ -1,4 +1,5 @@
 local actions = require("__the418_kb__/scripts/gui/edit-topic/actions")
+local helpers = require("__the418_kb__/scripts/gui/edit-topic/helpers")
 
 --- @class EditTopicsGui
 local EditTopicsGui = {}
@@ -15,6 +16,12 @@ end
 function EditTopicsGui:hide()
   self.refs.window.visible = false
   self.state.is_visible = false
+end
+
+function EditTopicsGui:update()
+  self.state.available_parents =
+    helpers.make_available_parents(global.public.top_level_topic_ids, self.state.topic)
+  helpers.build_parent_selector(self)
 end
 
 function EditTopicsGui:destroy()
