@@ -49,6 +49,8 @@ function index.new(player, player_table, Topic, ParentGui)
       available_parents = available_parents,
       selected_parent_index = refs.parent_dropdown.selected_index,
       topic = Topic and Topic or nil,
+      is_visible = true,
+      prevent_close = false,
     },
   }
 

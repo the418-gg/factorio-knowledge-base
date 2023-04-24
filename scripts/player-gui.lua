@@ -1,8 +1,8 @@
 local player_gui = {}
 
 --- @param player_index uint
---- @param gui_name "topics" | "edit_topic"
---- @return (TopicsGui | EditTopicsGui)?
+--- @param gui_name "topics" | "edit_topic" | "confirm_delete_topic"
+--- @return (TopicsGui | EditTopicsGui | ConfirmDeleteTopicGui)?
 function player_gui.get_gui(player_index, gui_name)
   local player_table = global.players[player_index]
   if player_table then

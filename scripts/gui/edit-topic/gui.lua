@@ -5,6 +5,18 @@ local EditTopicsGui = {}
 
 EditTopicsGui.actions = actions
 
+function EditTopicsGui:show()
+  self.refs.window.bring_to_front()
+  self.refs.window.visible = true
+  self.state.is_visible = true
+  self.player.opened = self.refs.window
+end
+
+function EditTopicsGui:hide()
+  self.refs.window.visible = false
+  self.state.is_visible = false
+end
+
 function EditTopicsGui:destroy()
   local window = self.refs.window
 
