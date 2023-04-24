@@ -118,3 +118,10 @@ styles.the418_kb__label_button = {
   font_color = { 128, 206, 240 },
   hovered_font_color = { 154, 250, 255 },
 }
+
+styles.the418_kb__label_button_disabled = {
+  type = "label_style",
+  parent = "the418_kb__label_button",
+  font_color = { 128, 128, 128 },
+  hovered_font_color = { 128, 128, 128 },
+}

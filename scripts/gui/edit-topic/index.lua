@@ -1,6 +1,7 @@
 local gui = require("__flib__/gui")
 local EditTopicsGui = require("__the418_kb__/scripts/gui/edit-topic/gui")
 local templates = require("__the418_kb__/scripts/gui/edit-topic/templates")
+local player_gui = require("__the418_kb__/scripts/player-gui")
 
 local index = {}
 
@@ -52,6 +53,12 @@ function index.new(player, player_table, Topic, ParentGui)
   }
 
   setmetatable(self, { __index = EditTopicsGui })
+
+  if Topic then
+    -- Lock this topic for editing
+    Topic:lock(player)
+    player_gui.update_all_topics()
+  end
 
   player_table.guis.edit_topic = self
 
