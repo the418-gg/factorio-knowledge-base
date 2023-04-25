@@ -58,27 +58,25 @@ script.on_event(defines.events.on_player_created, function(event)
   player_data.refresh(player, global.players[event.player_index])
 end)
 
-script.on_event("the418-kb--toggle-interface", function(event)
-  local TopicsGui = player_gui.get_gui(event.player_index, "topics")
+--- @param player_index uint
+local function toggle_interface(player_index)
+  local TopicsGui = player_gui.get_gui(player_index, "topics")
   if TopicsGui then
     TopicsGui:toggle()
   else
-    local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
-    local player_table = global.players[event.player_index]
+    local player = game.get_player(player_index) --[[@as LuaPlayer]]
+    local player_table = global.players[player_index]
     player_data.refresh(player, player_table)
   end
+end
+
+script.on_event("the418-kb--toggle-interface", function(event)
+  toggle_interface(event.player_index)
 end)
 
 script.on_event(defines.events.on_lua_shortcut, function(event)
   if event.prototype_name == "the418-kb--toggle-interface" then
-    local TopicsGui = player_gui.get_gui(event.player_index, "topics")
-    if TopicsGui then
-      TopicsGui:toggle()
-    else
-      local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
-      local player_table = global.players[event.player_index]
-      player_data.refresh(player, player_table)
-    end
+    toggle_interface(event.player_index)
   end
 end)
 
