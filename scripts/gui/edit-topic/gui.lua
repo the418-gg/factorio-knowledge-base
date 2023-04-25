@@ -1,5 +1,6 @@
 local actions = require("__the418_kb__/scripts/gui/edit-topic/actions")
 local helpers = require("__the418_kb__/scripts/gui/edit-topic/helpers")
+local player_gui = require("__the418_kb__/scripts/player-gui")
 
 --- @class EditTopicsGui
 local EditTopicsGui = {}
@@ -25,6 +26,14 @@ function EditTopicsGui:update()
 end
 
 function EditTopicsGui:destroy()
+  if self.state.child then
+    self.state.child:destroy()
+  end
+  if self.state.topic then
+    self.state.topic:unlock()
+    player_gui.update_all_topics()
+  end
+
   self.parent.state.child = nil
   local window = self.refs.window
 

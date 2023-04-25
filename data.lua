@@ -11,6 +11,29 @@ data:extend({
     key_sequence = "",
     linked_game_control = "confirm-gui",
   },
+  {
+    type = "shortcut",
+    name = "the418-kb--toggle-interface",
+    icon = { filename = "__the418_kb__/graphics/kb-dark-x32.png", size = 32, mipmap_count = 2 },
+    small_icon = {
+      filename = "__the418_kb__/graphics/kb-dark-x24.png",
+      size = 24,
+      mipmap_count = 2,
+    },
+    disabled_icon = {
+      filename = "__the418_kb__/graphics/kb-light-x32.png",
+      size = 32,
+      mipmap_count = 2,
+    },
+    disabled_small_icon = {
+      filename = "__the418_kb__/graphics/kb-light-x24.png",
+      size = 24,
+      mipmap_count = 2,
+    },
+    toggleable = true,
+    associated_control_input = "the418-kb--toggle-interface",
+    action = "lua",
+  },
 })
 
 local styles = data.raw["gui-style"].default
