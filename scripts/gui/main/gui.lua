@@ -12,15 +12,22 @@ function TopicsGui:open()
   self.refs.window.visible = true
   self.state.is_visible = true
   self.player.opened = self.refs.window
+  self.player.set_shortcut_toggled("the418-kb--toggle-interface", true)
 end
 
 function TopicsGui:close()
+  if self.state.child then
+    self.state.child:destroy()
+  end
+
   self.refs.window.visible = false
   self.state.is_visible = false
 
   if self.player.opened == self.refs.window then
     self.player.opened = nil
   end
+
+  self.player.set_shortcut_toggled("the418-kb--toggle-interface", false)
 end
 
 function TopicsGui:destroy()
@@ -32,6 +39,7 @@ function TopicsGui:destroy()
   self.player_table.guis.topics = nil
 
   self.player.opened = nil
+  self.player.set_shortcut_toggled("the418-kb--toggle-interface", false)
 end
 
 function TopicsGui:update()
