@@ -123,8 +123,10 @@ function templates.render()
 end
 
 --- @param Topic Topic
-function templates.topic_contents(Topic)
+--- @param contents LuaGuiElement -- TODO
+function templates.topic_contents(Topic, contents)
   local Lock = Topic:get_lock()
+  game.print(serpent.line(contents))
 
   return {
     type = "frame",
@@ -166,23 +168,24 @@ function templates.topic_contents(Topic)
         },
       },
     },
-    {
-      type = "scroll-pane",
-      style = "naked_scroll_pane",
-      style_mods = {
-        width = 940,
-        padding = 20,
-        extra_padding_when_activated = 0,
-        vertically_stretchable = "on",
-      },
-      {
-        type = "label",
-        caption = Topic.body,
-        style_mods = {
-          single_line = false,
-        },
-      },
-    },
+    contents,
+    -- {
+    --   type = "scroll-pane",
+    --   style = "naked_scroll_pane",
+    --   style_mods = {
+    --     width = 940,
+    --     padding = 20,
+    --     extra_padding_when_activated = 0,
+    --     vertically_stretchable = "on",
+    --   },
+    --   {
+    --     type = "label",
+    --     caption = Topic.body,
+    --     style_mods = {
+    --       single_line = false,
+    --     },
+    --   },
+    -- },
   }
 end
 
