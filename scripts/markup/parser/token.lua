@@ -14,8 +14,8 @@ token.KIND = {
   HeadingLevel1 = "#",
   HeadingLevel2 = "##",
   HeadingLevel3 = "###",
-  Asterisk = "*",
-  Gt = ">",
+  EmphasisBold = "**",
+  Blockquote = ">",
 }
 
 --- @class Token

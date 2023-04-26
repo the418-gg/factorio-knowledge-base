@@ -44,31 +44,64 @@ end
 --- @return Heading
 function Parser:parse_heading(level)
   self:next_token()
-  return { kind = ast.KIND.Heading, level = level, children = self:parse_inline_content() }
+  return { kind = ast.KIND.Heading, level = level, children = self:parse_inline_content_block() }
 end
 
 --- @private
 --- @return Paragraph
 function Parser:parse_paragraph()
-  return { kind = ast.KIND.Paragraph, children = self:parse_inline_content(true) }
+  return { kind = ast.KIND.Paragraph, children = self:parse_inline_content_block(true) }
 end
 
 --- @private
 --- @param till_hard_break boolean?
+--- @param till_token Token?
 --- @return InlineContent[]
-function Parser:parse_inline_content(till_hard_break)
-  local content = {}
+function Parser:parse_inline_content_block(till_hard_break, till_token)
+  local block = {}
 
   while true do
-    if self.current_token.kind == token.KIND.Text then
-      table.insert(content, { kind = ast.KIND.Text, text = self.current_token.value })
-    elseif till_hard_break and self.current_token.kind == token.KIND.SoftBreak then
-      -- ignore soft break
+    if till_hard_break and self.current_token.kind == token.KIND.SoftBreak then
+      table.insert(block, { kind = ast.KIND.SoftBreak })
+    elseif self.current_token.kind == token.KIND.EmphasisBold then
+      if till_token and till_token.kind == token.KIND.EmphasisBold then
+        -- finish bold block
+        return { { kind = ast.KIND.EmphasisedText, emphasis = "BOLD", children = block } }
+      else
+        -- start bold block
+        self:next_token()
+        for _, c in
+          pairs(
+            self:parse_inline_content_block(till_hard_break, { kind = token.KIND.EmphasisBold })
+          )
+        do
+          table.insert(block, c)
+        end
+      end
     else
-      return content
+      local content = self:parse_inline_content()
+      if content then
+        table.insert(block, content)
+      else
+        if till_token then
+          -- till_token block not finished
+          table.insert(block, 1, { kind = ast.KIND.Text, text = token.to_string(till_token) })
+        end
+        return block
+      end
     end
 
     self:next_token()
+  end
+end
+
+--- @private
+--- @return InlineContent?
+function Parser:parse_inline_content()
+  if self.current_token.kind == token.KIND.Text then
+    return { kind = ast.KIND.Text, text = self.current_token.value }
+  elseif self.current_token.kind == token.KIND.SoftBreak then
+    return { kind = ast.KIND.SoftBreak }
   end
 end
 

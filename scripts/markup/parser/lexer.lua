@@ -13,24 +13,33 @@ function Lexer:next_token()
   return tok
 end
 
+--- @param is_escaped true?
 --- @return Token
-function Lexer:get_current_token()
-  if self.current_char == "\n" then
-    if self:peek_char() == "\n" then
-      self:read_char()
-      return { kind = token.KIND.HardBreak }
-    end
-    return { kind = token.KIND.SoftBreak }
-  elseif self.current_char == " " then
-    return { kind = token.KIND.Space }
-  elseif self.current_char == "#" then
-    return self:try_read_heading()
-  elseif self.current_char == "*" then
-    return { kind = token.KIND.Asterisk }
-  elseif self.current_char == ">" then
-    return { kind = token.KIND.Gt }
-  elseif self.current_char == "" then
+function Lexer:get_current_token(is_escaped)
+  if self.current_char == "" then
     return { kind = token.KIND.EOF }
+  elseif self.current_char == "\\" then
+    self:read_char()
+    return self:get_current_token(true)
+  elseif self.is_beginning_of_line and self.current_char == "#" then
+    return self:try_read_heading()
+  elseif self.is_beginning_of_line and self.current_char == ">" then
+    return { kind = token.KIND.Blockquote }
+  elseif self.is_beginning_of_line and self.current_char == "\n" then
+    return { kind = token.KIND.HardBreak }
+  elseif not is_escaped then
+    if self.current_char == "\n" then
+      if self:peek_char() == "\n" then
+        self:read_char()
+        return { kind = token.KIND.HardBreak }
+      end
+      return { kind = token.KIND.SoftBreak }
+    elseif self.current_char == "*" and self:peek_char() == "*" then
+      self:read_char()
+      return { kind = token.KIND.EmphasisBold }
+    else
+      return { kind = token.KIND.Text, value = self:read_text() }
+    end
   else
     return { kind = token.KIND.Text, value = self:read_text() }
   end
@@ -41,6 +50,7 @@ function Lexer:read_char()
   if self.read_position > #self.input then
     self.current_char = ""
   else
+    self.is_beginning_of_line = self.current_char == "\n" or self.current_char == ""
     self.current_char = string.sub(self.input, self.read_position, self.read_position)
   end
 
@@ -61,20 +71,22 @@ function Lexer:try_read_heading()
         self:read_char()
         return { kind = token.KIND.HeadingLevel3 }
       else
-        return { kind = token.KIND.Text, value = "##" .. self:read_text() }
+        self:read_char()
+        return { kind = token.KIND.Text, value = "###" .. self:read_text() }
       end
     elseif self:peek_char() == " " then
       self:read_char()
       return { kind = token.KIND.HeadingLevel2 }
     else
-      return { kind = token.KIND.Text, value = "#" .. self:read_text() }
+      self:read_char()
+      return { kind = token.KIND.Text, value = "##" .. self:read_text() }
     end
   elseif self:peek_char() == " " then
     self:read_char()
     return { kind = token.KIND.HeadingLevel1 }
   else
     self:read_char()
-    return { kind = token.KIND.Text, value = self:read_text() }
+    return { kind = token.KIND.Text, value = "#" .. self:read_text() }
   end
 end
 
@@ -85,7 +97,12 @@ function Lexer:read_text()
 
   while true do
     text = text .. self.current_char --- @type string
-    if self:peek_char() == "\n" or self:peek_char() == "" then
+    if
+      self:peek_char() == "\n"
+      or self:peek_char() == ""
+      or self:peek_char() == "*"
+      or self:peek_char() == "\\"
+    then
       return text
     end
 
@@ -136,6 +153,7 @@ function lexer.new(input)
     position = 1,
     read_position = 1,
     current_char = "",
+    is_beginning_of_line = true,
   }
 
   setmetatable(self, { __index = Lexer })

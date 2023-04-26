@@ -32,7 +32,7 @@ function helpers.build_selected_topic_contents(Gui)
   if Gui.state.selected_topic_id then
     local Topic = global.topics[Gui.state.selected_topic_id]
     local ast = test.parse(Topic.body)
-    game.print("AST" .. serpent.block(ast))
+    -- game.print("AST" .. serpent.block(ast))
     local contents = topic_body.from_ast(ast)
     gui.add(Gui.refs.current_topic_contents, templates.topic_contents(Topic, contents))
   else

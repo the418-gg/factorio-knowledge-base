@@ -126,7 +126,7 @@ end
 --- @param contents LuaGuiElement -- TODO
 function templates.topic_contents(Topic, contents)
   local Lock = Topic:get_lock()
-  game.print(serpent.line(contents))
+  -- game.print(serpent.line(contents))
 
   return {
     type = "frame",
