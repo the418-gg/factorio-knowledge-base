@@ -7,7 +7,9 @@ token.KIND = {
   -- Delimiters
   SoftBreak = "\n",
   HardBreak = "\n\n",
+  LineBreak = "\\\n",
   Space = " ",
+  DoubleWhitespace = "  ",
   -- Input
   Text = "__TEXT__",
   -- Formatting tokens
@@ -15,7 +17,8 @@ token.KIND = {
   HeadingLevel2 = "##",
   HeadingLevel3 = "###",
   EmphasisBold = "**",
-  Blockquote = ">",
+  ListItemUnordered = "-",
+  ListItemOrdered = "__LIST_ITEM_ORDERED__",
 }
 
 --- @class Token

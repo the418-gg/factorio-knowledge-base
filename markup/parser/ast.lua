@@ -7,13 +7,21 @@
 --- @field kind "PARAGRAPH"
 --- @field children InlineContent[]
 
---- @alias Block Heading | Paragraph
+--- @alias ListType "ORDERED" | "UNORDERED"
+
+--- @class List
+--- @field kind "LIST"
+--- @field level uint
+--- @field list_type ListType
+--- @field items Paragraph[]
+
+--- @alias Block Heading | Paragraph | List
 
 --- @class Text
 --- @field kind "TEXT"
 --- @field text string
 
---- @alias TextEmphasis "BOLD" | "ITALIC"
+--- @alias TextEmphasis "BOLD"
 
 --- @class EmphasisedText
 --- @field kind "EMPHASISED_TEXT"
@@ -23,7 +31,10 @@
 --- @class SoftBreak
 --- @field kind "SOFT_BREAK"
 
---- @alias InlineContent Text | EmphasisedText | SoftBreak
+--- @class LineBreak
+--- @field kind "LINE_BREAK"
+
+--- @alias InlineContent Text | EmphasisedText | SoftBreak | LineBreak
 
 --- @alias AST Block[]
 
@@ -32,16 +43,11 @@ local ast = {}
 ast.KIND = {
   Paragraph = "PARAGRAPH",
   Heading = "HEADING",
+  List = "LIST",
   Text = "TEXT",
   EmphasisedText = "EMPHASISED_TEXT",
   SoftBreak = "SOFT_BREAK",
+  LineBreak = "LINE_BREAK",
 }
-
--- Heading {level=1..3, children}
--- Paragraph {children}
--- Text {children}
--- Italics {children}
--- Bold {children}
--- Blockquote {children}
 
 return ast

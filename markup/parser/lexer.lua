@@ -1,4 +1,5 @@
-local token = require("__the418_kb__/scripts/markup/parser/token")
+local token = require("__the418_kb__/markup/parser/token")
+local serpent = require("serpent")
 
 --- @class Lexer
 local Lexer = {}
@@ -8,7 +9,6 @@ function Lexer:next_token()
   self:skip_empty_space()
 
   local tok = self:get_current_token()
-  game.print("TOK" .. serpent.line(tok))
   self:read_char()
   return tok
 end
@@ -16,25 +16,37 @@ end
 --- @param is_escaped true?
 --- @return Token
 function Lexer:get_current_token(is_escaped)
+  -- print("CURCH" .. self.current_char)
+  -- print("TOPLV" .. tostring(self.is_beginning_of_line))
   if self.current_char == "" then
     return { kind = token.KIND.EOF }
   elseif self.current_char == "\\" then
     self:read_char()
     return self:get_current_token(true)
+  elseif self.is_beginning_of_line and self.current_char == " " and self:peek_char() == " " then
+    self:read_char()
+    self.is_beginning_of_line = true
+    return { kind = token.KIND.DoubleWhitespace }
   elseif self.is_beginning_of_line and self.current_char == "#" then
     return self:try_read_heading()
-  elseif self.is_beginning_of_line and self.current_char == ">" then
-    return { kind = token.KIND.Blockquote }
+  elseif self.is_beginning_of_line and self.current_char == "-" and self:peek_char() == " " then
+    self:read_char()
+    -- TODO rename this? since technically in the context of lists it's not a "beginning of line"
+    self.is_beginning_of_line = true
+    return { kind = token.KIND.ListItemUnordered }
   elseif self.is_beginning_of_line and self.current_char == "\n" then
     return { kind = token.KIND.HardBreak }
+  elseif self.current_char == "\n" then
+    if is_escaped then
+      return { kind = token.KIND.LineBreak }
+    end
+    if self:peek_char() == "\n" then
+      self:read_char()
+      return { kind = token.KIND.HardBreak }
+    end
+    return { kind = token.KIND.SoftBreak }
   elseif not is_escaped then
-    if self.current_char == "\n" then
-      if self:peek_char() == "\n" then
-        self:read_char()
-        return { kind = token.KIND.HardBreak }
-      end
-      return { kind = token.KIND.SoftBreak }
-    elseif self.current_char == "*" and self:peek_char() == "*" then
+    if self.current_char == "*" and self:peek_char() == "*" then
       self:read_char()
       return { kind = token.KIND.EmphasisBold }
     else
@@ -50,7 +62,9 @@ function Lexer:read_char()
   if self.read_position > #self.input then
     self.current_char = ""
   else
-    self.is_beginning_of_line = self.current_char == "\n" or self.current_char == ""
+    self.is_beginning_of_line = self.current_char == "\n"
+      or self.current_char == ""
+      or (self.is_beginning_of_line and self.current_char == " ")
     self.current_char = string.sub(self.input, self.read_position, self.read_position)
   end
 

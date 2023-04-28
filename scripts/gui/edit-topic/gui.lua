@@ -1,7 +1,7 @@
 local actions = require("__the418_kb__/scripts/gui/edit-topic/actions")
 local helpers = require("__the418_kb__/scripts/gui/edit-topic/helpers")
 local player_gui = require("__the418_kb__/scripts/player-gui")
-local test = require("__the418_kb__/scripts/markup/test")
+local test = require("__the418_kb__/markup/test")
 
 --- @class EditTopicsGui
 local EditTopicsGui = {}

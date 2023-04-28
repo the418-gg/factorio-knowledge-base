@@ -1,6 +1,6 @@
 local table = require("__flib__/table")
 
-local ast = require("__the418_kb__/scripts/markup/parser/ast")
+local ast = require("__the418_kb__/markup/parser/ast")
 local constants = require("__the418_kb__/constants")
 local topic_body = {}
 
@@ -14,6 +14,8 @@ function topic_body.from_ast(Ast)
       table.insert(blocks, topic_body.paragraph(block --[[@as Paragraph]]))
     elseif block.kind == ast.KIND.Heading then
       table.insert(blocks, topic_body.heading(block --[[@as Heading]]))
+    elseif block.kind == ast.KIND.List then
+      table.insert(blocks, topic_body.list(block --[[@as List]]))
     end
   end
 
@@ -35,9 +37,9 @@ end
 function topic_body.paragraph(paragraph)
   return {
     type = "flow",
-    direction = "horizontal",
+    direction = "vertical",
     style_mods = {
-      horizontal_spacing = 0,
+      vertical_spacing = 0,
     },
     table.unpack(topic_body.inline_children(paragraph.children)),
   }
@@ -49,9 +51,9 @@ function topic_body.heading(heading)
   local heading_label_font = "heading-" .. heading.level
   return {
     type = "flow",
-    direction = "horizontal",
+    direction = "vertical",
     style_mods = {
-      horizontal_spacing = 0,
+      vertical_spacing = 0,
     },
     table.unpack(
       topic_body.inline_children(
@@ -62,19 +64,57 @@ function topic_body.heading(heading)
   }
 end
 
+--- @param list List
+--- @return LuaGuiElement
+function topic_body.list(list)
+  local items = {} --- @type LuaGuiElement[]
+
+  for _, item in pairs(list.items) do
+    table.insert(items, {
+      type = "flow",
+      direction = "horizontal",
+      {
+        type = "label",
+        caption = "•",
+      },
+      topic_body.paragraph(item),
+    })
+  end
+
+  return {
+    type = "flow",
+    direction = "vertical",
+    style_mods = {
+      vertical_spacing = 0,
+    },
+    table.unpack(items),
+  }
+end
+
 --- @param children InlineContent[]
 --- @param style_mods table<string, any>?
---- @return LuaGuiElement[]
+--- @return LuaGuiElement
 function topic_body.inline_children(children, style_mods)
-  local result = {}
+  local lines = {}
+  local line_contents = {}
 
-  for _, content in pairs(children) do
+  for i, content in pairs(children) do
     for _, block in pairs(topic_body.inline_content(content, style_mods or {})) do
-      table.insert(result, block)
+      table.insert(line_contents, block)
+    end
+    if content.kind == ast.KIND.LineBreak or i == #children then
+      table.insert(lines, {
+        type = "flow",
+        direction = "horizontal",
+        style_mods = {
+          horizontal_spacing = 0,
+        },
+        table.unpack(line_contents),
+      })
     end
   end
 
-  return result
+  return lines
 end
 
 --- @param content InlineContent
@@ -108,6 +148,8 @@ function topic_body.inline_content(content, style_mods)
         caption = " ",
       },
     }
+  elseif content.kind == ast.KIND.LineBreak then
+    return {}
   else
     -- not implemented
     return {}
