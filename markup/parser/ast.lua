@@ -30,7 +30,10 @@
 --- @class HorizontalRule
 --- @field kind "HORIZONTAL_RULE"
 
---- @alias Block Heading | Paragraph | List | HorizontalRule
+--- @class CodeBlock
+--- @field text string
+
+--- @alias Block Heading | Paragraph | List | HorizontalRule | CodeBlock
 
 --- @class Text
 --- @field kind "TEXT"
@@ -43,13 +46,17 @@
 --- @field emphasis TextEmphasis
 --- @field children InlineContent[]
 
+--- @class CodeInline
+--- @field kind "CODE_INLINE"
+--- @field text string
+
 --- @class SoftBreak
 --- @field kind "SOFT_BREAK"
 
 --- @class LineBreak
 --- @field kind "LINE_BREAK"
 
---- @alias InlineContent Text | EmphasisedText | SoftBreak | LineBreak
+--- @alias InlineContent Text | EmphasisedText | CodeInline | SoftBreak | LineBreak
 
 --- @alias AST Block[]
 
@@ -65,6 +72,8 @@ ast.KIND = {
   SoftBreak = "SOFT_BREAK",
   LineBreak = "LINE_BREAK",
   HorizontalRule = "HORIZONTAL_RULE",
+  CodeInline = "CODE_INLINE",
+  CodeBlock = "CODE_BLOCK",
 }
 
 return ast

@@ -21,13 +21,13 @@ function topic_body.from_ast(Ast)
       width = 940,
       padding = 20,
       extra_padding_when_activated = 0,
-      vertically_stretchable = "on",
     },
     {
       type = "flow",
       direction = "vertical",
       style_mods = {
         vertical_spacing = 16,
+        horizontally_stretchable = "on",
       },
       table.unpack(blocks),
     },
@@ -45,6 +45,8 @@ function topic_body.block(block)
     return topic_body.list(block --[[@as List]])
   elseif block.kind == ast.KIND.HorizontalRule then
     return topic_body.horizontal_rule()
+  elseif block.kind == ast.KIND.CodeBlock then
+    return topic_body.code_block(block --[[@as CodeBlock]])
   else
     -- TODO
     return {}
@@ -149,6 +151,35 @@ function topic_body.horizontal_rule()
   }
 end
 
+--- @param block CodeBlock
+--- @return LuaGuiElement
+function topic_body.code_block(block)
+  local max_width = 888
+  local max_line_length_without_scroll = math.floor(max_width / 8) - 1
+  local lines = 0
+  local max_line_length = 0
+  for line in string.gmatch(block.text, "[^\r^\n]+") do
+    if max_line_length < #line then
+      max_line_length = #line
+    end
+    lines = lines + 1
+  end
+  local base_height = lines * 20 + 8
+
+  return {
+    type = "text-box",
+    text = block.text,
+    elem_mods = {
+      read_only = true,
+    },
+    style_mods = {
+      horizontally_stretchable = "on",
+      height = max_line_length > max_line_length_without_scroll and base_height + 16 or base_height,
+      maximal_width = max_width,
+    },
+  }
+end
+
 --- @param children InlineContent[]
 --- @param style_mods table<string, any>?
 --- @return LuaGuiElement
@@ -169,6 +200,8 @@ function topic_body.inline_children(children, style_mods)
         },
         table.unpack(line_contents),
       })
+
+      line_contents = {}
     end
   end
 
@@ -199,6 +232,17 @@ function topic_body.inline_content(content, style_mods)
     else
       error("Invalid text emphasis: " .. content.emphasis)
     end
+  elseif content.kind == ast.KIND.CodeInline then
+    return {
+      {
+        type = "label",
+        caption = content.text,
+        style_mods = {
+          single_line = false,
+          font_color = constants.colors.Orange,
+        },
+      },
+    }
   elseif content.kind == ast.KIND.SoftBreak then
     return {
       {
@@ -207,7 +251,7 @@ function topic_body.inline_content(content, style_mods)
       },
     }
   elseif content.kind == ast.KIND.LineBreak then
-    return {}
+    return { { type = "label" } }
   else
     -- not implemented
     return {}

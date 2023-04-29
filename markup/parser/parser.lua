@@ -50,6 +50,10 @@ function Parser:parse_block()
   elseif self.current_token.kind == token.KIND.HorizontalRule then
     self:next_token()
     return { kind = ast.KIND.HorizontalRule }
+  elseif self.current_token.kind == token.KIND.CodeBlock then
+    local result = { kind = ast.KIND.CodeBlock, text = self.current_token.value }
+    self:next_token()
+    return result
   else
     return self:parse_paragraph()
   end
@@ -205,6 +209,20 @@ function Parser:parse_inline_content_block(till_hard_break, till_token)
         do
           table.insert(block, c)
         end
+      end
+    elseif self.current_token.kind == token.KIND.CodeInline then
+      local is_first_line = true
+      for line in string.gmatch(self.current_token.value, "[^\r^\n]+") do
+        if not is_first_line then
+          table.insert(block, { kind = ast.KIND.LineBreak })
+        end
+        table.insert(block, { kind = ast.KIND.CodeInline, text = line })
+        is_first_line = false
+      end
+
+      if is_first_line then
+        -- empty block
+        table.insert(block, { kind = ast.KIND.CodeInline, text = self.current_token.value })
       end
     else
       local content = self:parse_inline_content()

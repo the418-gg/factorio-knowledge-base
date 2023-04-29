@@ -12,14 +12,17 @@ token.KIND = {
   DoubleWhitespace = "  ",
   -- Input
   Text = "__TEXT__",
-  -- Formatting tokens
+  -- Block-level tokens
   HeadingLevel1 = "#",
   HeadingLevel2 = "##",
   HeadingLevel3 = "###",
-  EmphasisBold = "**",
+  HorizontalRule = "---",
   ListItemUnordered = "-",
   ListItemOrdered = "__LIST_ITEM_ORDERED__",
-  HorizontalRule = "---",
+  CodeBlock = "```",
+  -- Inline-level tokens
+  EmphasisBold = "**",
+  CodeInline = "`",
 }
 
 --- @class Token

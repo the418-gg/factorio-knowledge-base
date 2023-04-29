@@ -878,7 +878,200 @@ Another paragraph]])
     end)
   end)
 
-  describe("specific cases #only", function()
+  describe("code blocks #only", function()
+    describe("inline code", function()
+      it("should parse inline code", function()
+        local ast = parse("`let x = 1`")
+        assert.are.same(ast, {
+          {
+            kind = "PARAGRAPH",
+            children = {
+              { kind = "CODE_INLINE", text = "let x = 1" },
+            },
+          },
+        })
+      end)
+
+      it("should be escapable", function()
+        local ast = parse("\\`let x = 1`")
+        assert.are.same(ast, {
+          {
+            kind = "PARAGRAPH",
+            children = {
+              { kind = "TEXT", text = "`let x = 1" },
+              { kind = "TEXT", text = "`" },
+            },
+          },
+        })
+      end)
+
+      it("should work with unfinished empty code correctly", function()
+        local ast = parse("`")
+        assert.are.same(ast, {
+          {
+            kind = "PARAGRAPH",
+            children = {
+              { kind = "TEXT", text = "`" },
+            },
+          },
+        })
+      end)
+
+      it("should work with unfinished inline code correctly", function()
+        local ast = parse("`let **x** = 1")
+        assert.are.same(ast, {
+          {
+            kind = "PARAGRAPH",
+            children = {
+              { kind = "TEXT", text = "`let " },
+              {
+                kind = "EMPHASISED_TEXT",
+                emphasis = "BOLD",
+                children = { { kind = "TEXT", text = "x" } },
+              },
+              { kind = "TEXT", text = " = 1" },
+            },
+          },
+        })
+      end)
+
+      it("should parse multiline inline code", function()
+        local ast = parse([[
+wow `let x = 1 else end
+after that begin echo resolve` super cool
+]])
+
+        assert.are.same(ast, {
+          {
+            kind = "PARAGRAPH",
+            children = {
+              { kind = "TEXT", text = "wow " },
+              { kind = "CODE_INLINE", text = "let x = 1 else end" },
+              { kind = "LINE_BREAK" },
+              { kind = "CODE_INLINE", text = "after that begin echo resolve" },
+              { kind = "TEXT", text = " super cool" },
+              { kind = "SOFT_BREAK" },
+            },
+          },
+        })
+      end)
+    end)
+
+    describe("code blocks", function()
+      it("should parse code blocks", function()
+        local ast = parse([[
+```
+let x = 1
+let y = 2
+return x + y
+```]])
+
+        assert.are.same(ast, {
+          {
+            kind = "CODE_BLOCK",
+            text = "let x = 1\nlet y = 2\nreturn x + y",
+          },
+        })
+      end)
+
+      it("should be escapable", function()
+        local ast = parse([[
+\```
+let x = 1
+```]])
+        assert.are.same(ast, {
+          {
+            kind = "PARAGRAPH",
+            children = {
+              { kind = "TEXT", text = "`" },
+              { kind = "CODE_INLINE", text = "" },
+              { kind = "SOFT_BREAK" },
+              { kind = "TEXT", text = "let x = 1" },
+              { kind = "SOFT_BREAK" },
+              { kind = "TEXT", text = "```" },
+            },
+          },
+        })
+      end)
+
+      describe("unfinished blocks", function()
+        it("should parse correctly when blatantly unfinished", function()
+          local ast = parse([[
+```
+let x = 1]])
+          assert.are.same(ast, {
+            {
+              kind = "PARAGRAPH",
+              children = {
+                { kind = "TEXT", text = "```" },
+                { kind = "SOFT_BREAK" },
+                { kind = "TEXT", text = "let x = 1" },
+              },
+            },
+          })
+        end)
+
+        it("should parse correctly when only one ` is at the end", function()
+          local ast = parse([[
+```
+let x = 1
+`]])
+          assert.are.same(ast, {
+            {
+              kind = "PARAGRAPH",
+              children = {
+                { kind = "TEXT", text = "```" },
+                { kind = "SOFT_BREAK" },
+                { kind = "TEXT", text = "let x = 1" },
+                { kind = "SOFT_BREAK" },
+                { kind = "TEXT", text = "`" },
+              },
+            },
+          })
+        end)
+
+        it("should parse correctly when only two ` are at the end", function()
+          local ast = parse([[
+```
+let x = 1
+``]])
+          assert.are.same(ast, {
+            {
+              kind = "PARAGRAPH",
+              children = {
+                { kind = "TEXT", text = "```" },
+                { kind = "SOFT_BREAK" },
+                { kind = "TEXT", text = "let x = 1" },
+                { kind = "SOFT_BREAK" },
+                { kind = "TEXT", text = "``" },
+              },
+            },
+          })
+        end)
+
+        it("should parse correctly when ```smth is at the end", function()
+          local ast = parse([[
+```
+let x = 1
+```nope]])
+          assert.are.same(ast, {
+            {
+              kind = "PARAGRAPH",
+              children = {
+                { kind = "TEXT", text = "```" },
+                { kind = "SOFT_BREAK" },
+                { kind = "TEXT", text = "let x = 1" },
+                { kind = "SOFT_BREAK" },
+                { kind = "TEXT", text = "```nope" },
+              },
+            },
+          })
+        end)
+      end)
+    end)
+  end)
+
+  describe("specific cases", function()
     it("should parse content after heading", function()
       local ast = parse([[
 # heading 1

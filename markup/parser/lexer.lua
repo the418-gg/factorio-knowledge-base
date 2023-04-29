@@ -37,6 +37,12 @@ function Lexer:get_current_token(is_escaped)
     else
       return { kind = token.KIND.Text, value = self:read_text() }
     end
+  elseif self.is_beginning_of_line and self.current_char == "`" then
+    if self:peek_char() == "`" then
+      return self:try_read_code_block()
+    else
+      return self:try_read_inline_code()
+    end
   elseif self.is_beginning_of_line and self:current_char_is_digit() then
     return self:try_read_ordered_list_item()
   elseif self.is_beginning_of_line and self.current_char == "\n" then
@@ -54,6 +60,8 @@ function Lexer:get_current_token(is_escaped)
     if self.current_char == "*" and self:peek_char() == "*" then
       self:read_char()
       return { kind = token.KIND.EmphasisBold }
+    elseif self.current_char == "`" then
+      return self:try_read_inline_code()
     else
       return { kind = token.KIND.Text, value = self:read_text() }
     end
@@ -136,11 +144,79 @@ end
 --- @return Token
 function Lexer:try_read_horizontal_rule()
   local initial_position = self.position
-  self:read_char() --- first '-'
+  self:read_char() -- first '-'
   if self:peek_char() == "-" then
     self:read_char() -- second '-'
     if self:peek_char() == "\n" or self:peek_char() == "" then
       return { kind = token.KIND.HorizontalRule }
+    end
+  end
+
+  return {
+    kind = token.KIND.Text,
+    value = string.sub(self.input, initial_position, self.position - 1) .. self:read_text(),
+  }
+end
+
+--- @private
+--- @return Token
+function Lexer:try_read_inline_code()
+  local initial_position = self.position
+  self:read_char() -- opening '`'
+
+  while self.current_char ~= "`" do
+    if self.current_char == "" then
+      self.position = initial_position
+      self.read_position = initial_position + 1
+      return {
+        kind = token.KIND.Text,
+        value = string.sub(self.input, initial_position, initial_position) .. self:read_text(),
+      }
+    end
+    self:read_char()
+  end
+
+  return {
+    kind = token.KIND.CodeInline,
+    value = string.sub(self.input, initial_position + 1, self.position - 1),
+  }
+end
+
+--- @private
+--- @return Token
+function Lexer:try_read_code_block()
+  local initial_position = self.position
+  self:read_char() -- first '`'
+  if self:peek_char() == "`" then
+    self:read_char() -- second '`'
+    if self:peek_char() == "\n" then
+      self:read_char()
+      while true do
+        if self.current_char == "" then
+          local result = {
+            kind = token.KIND.Text,
+            value = string.sub(self.input, initial_position, initial_position + 2)
+              .. self:read_text(),
+          }
+          self.position = initial_position + 1
+          self.read_position = initial_position + 2
+          self:next_token()
+          return result
+        elseif self.current_char == "`" and self:peek_char() == "`" then
+          self:read_char()
+          if self:peek_char() == "`" then
+            self:read_char()
+            if self:peek_char() == "\n" or self:peek_char() == "" then
+              self:read_char()
+              return {
+                kind = token.KIND.CodeBlock,
+                value = string.sub(self.input, initial_position + 4, self.position - 5),
+              }
+            end
+          end
+        end
+        self:read_char()
+      end
     end
   end
 
@@ -161,6 +237,7 @@ function Lexer:read_text()
       self:peek_char() == "\n"
       or self:peek_char() == ""
       or self:peek_char() == "*"
+      or self:peek_char() == "`"
       or self:peek_char() == "\\"
     then
       return text
