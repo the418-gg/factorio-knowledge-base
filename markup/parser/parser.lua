@@ -1,6 +1,11 @@
 local ast = require("__the418_kb__/markup/parser/ast")
 local token = require("__the418_kb__/markup/parser/token")
 
+local LIST_TYPE_TOKEN_MAPPING = {
+  ORDERED = token.KIND.ListItemOrdered,
+  UNORDERED = token.KIND.ListItemUnordered,
+}
+
 --- @class Parser
 local Parser = {}
 
@@ -39,6 +44,8 @@ function Parser:parse_block()
     return self:parse_heading(3)
   elseif self.current_token.kind == token.KIND.ListItemUnordered then
     return self:parse_list("UNORDERED")
+  elseif self.current_token.kind == token.KIND.ListItemOrdered then
+    return self:parse_list("ORDERED")
   elseif self.current_token.kind == token.KIND.HardBreak then
     self:next_token()
   else
@@ -62,26 +69,38 @@ end
 
 --- @private
 --- @param list_type ListType
---- @return List?
+--- @return List
 function Parser:parse_list(list_type)
   local items = {} --- @type Block[]
+  local list_token = LIST_TYPE_TOKEN_MAPPING[list_type]
 
-  local level = self.list_level
+  local level = self.list_context.level
+  local list_item_order = 1 --- @type uint
+
   while true do
-    if self.list_double_whitespace_eaten then
-      self.list_double_whitespace_eaten = false
+    if self.list_context.double_whitespace_eaten then
+      self.list_context.double_whitespace_eaten = false
       -- indentation already eaten for the first item
       if self.current_token.kind == token.KIND.DoubleWhitespace then
         -- try with indentation + 1
-        self.list_level = self.list_level + 1
-        local block = self:parse_block()
-        if block then
-          table.insert(items, self:parse_block())
+        self.list_context.level = self.list_context.level + 1
+        local item = self:parse_list_item(list_item_order)
+        if item then
+          if item.kind == "LIST_ITEM" then
+            list_item_order = list_item_order + 1
+          end
+          table.insert(items, item)
         end
-      elseif self.current_token.kind == token.KIND.ListItemUnordered then
-        if self.list_level == level then
+      elseif self.current_token.kind == list_token then
+        if self.list_context.level == level then
           self:next_token()
-          table.insert(items, self:parse_block())
+          local item = self:parse_list_item(list_item_order)
+          if item then
+            if item.kind == "LIST_ITEM" then
+              list_item_order = list_item_order + 1
+            end
+            table.insert(items, item)
+          end
         else
           -- if we were too deep, return
           local result = {
@@ -96,41 +115,66 @@ function Parser:parse_list(list_type)
     end
 
     -- try with current indentation
-    for i = 1, self.list_level - 1 do
+    for i = 1, self.list_context.level - 1 do
       if self.current_token.kind == token.KIND.DoubleWhitespace then
         self:next_token()
       else
         -- indentation smaller than expected, end list
-        self.list_double_whitespace_eaten = true
+        self.list_context.double_whitespace_eaten = true
         local result = {
           kind = ast.KIND.List,
           level = level,
           list_type = list_type,
           items = items,
         }
-        self.list_level = i
+        self.list_context.level = i
         return result
       end
     end
 
     if self.current_token.kind == token.KIND.DoubleWhitespace then
-      self.list_double_whitespace_eaten = true
+      self.list_context.double_whitespace_eaten = true
       -- try with indentation + 1
-      self.list_level = self.list_level + 1
+      self.list_context.level = self.list_context.level + 1
       self:next_token()
-      local block = self:parse_block()
-      if block then
-        table.insert(items, block)
+      local item = self:parse_list_item(list_item_order)
+      if item then
+        if item.kind == "LIST_ITEM" then
+          list_item_order = list_item_order + 1
+        end
+        table.insert(items, item)
       end
-    elseif self.current_token.kind == token.KIND.ListItemUnordered then
+    elseif self.current_token.kind == list_token then
       self:next_token()
-      table.insert(items, self:parse_block())
+      local item = self:parse_list_item(list_item_order)
+      if item then
+        if item.kind == "LIST_ITEM" then
+          list_item_order = list_item_order + 1
+        end
+        table.insert(items, item)
+      end
     else
       break
     end
   end
 
   return { kind = ast.KIND.List, level = level, list_type = list_type, items = items }
+end
+
+--- @private
+--- @param order uint
+--- @return (ListItem | List)?
+function Parser:parse_list_item(order)
+  local block = self:parse_block()
+  if not block then
+    return
+  end
+
+  if block.kind == "LIST" then
+    return block --[[@as List]]
+  else
+    return { kind = ast.KIND.ListItem, order = order, content = block }
+  end
 end
 
 --- @private
@@ -213,9 +257,11 @@ function parser.new(lexer)
     lexer = lexer,
     current_token = { kind = token.KIND.EOF }, --- @type Token
     peek_token = { kind = token.KIND.EOF }, --- @type Token
-    prev_list_level = 1,
-    list_level = 1,
-    list_double_whitespace_eaten = false,
+    --- @class ParserListContext
+    list_context = {
+      level = 1,
+      double_whitespace_eaten = false,
+    },
   }
   setmetatable(self, { __index = Parser })
 

@@ -7,13 +7,25 @@
 --- @field kind "PARAGRAPH"
 --- @field children InlineContent[]
 
+--- @alias List OrderedList | UnorderedList
 --- @alias ListType "ORDERED" | "UNORDERED"
 
---- @class List
+--- @class OrderedList
 --- @field kind "LIST"
 --- @field level uint
---- @field list_type ListType
---- @field items Paragraph[]
+--- @field list_type "ORDERED"
+--- @field items (List | ListItem)[]
+
+--- @class UnorderedList
+--- @field kind "LIST"
+--- @field level uint
+--- @field list_type "UNORDERED"
+--- @field items (List | ListItem)[]
+
+--- @class ListItem
+--- @field kind "LIST_ITEM"
+--- @field order uint
+--- @field content Block
 
 --- @alias Block Heading | Paragraph | List
 
@@ -44,6 +56,7 @@ ast.KIND = {
   Paragraph = "PARAGRAPH",
   Heading = "HEADING",
   List = "LIST",
+  ListItem = "LIST_ITEM",
   Text = "TEXT",
   EmphasisedText = "EMPHASISED_TEXT",
   SoftBreak = "SOFT_BREAK",

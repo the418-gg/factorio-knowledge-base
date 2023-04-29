@@ -90,7 +90,7 @@ describe("FactorioMark", function()
   describe("paragraphs", function()
     it("should parse paragraphs", function()
       local ast = parse([[
-Line 1
+12 Line 1
 same line as line 1
 
 Paragraph 2\
@@ -102,7 +102,7 @@ Another paragraph]])
         {
           kind = "PARAGRAPH",
           children = {
-            { kind = "TEXT", text = "Line 1" },
+            { kind = "TEXT", text = "12 Line 1" },
             { kind = "SOFT_BREAK" },
             { kind = "TEXT", text = "same line as line 1" },
           },
@@ -140,37 +140,50 @@ Another paragraph]])
           list_type = "UNORDERED",
           items = {
             {
-              kind = "PARAGRAPH",
-              children = {
-                { kind = "TEXT", text = "list item 1" },
-                { kind = "SOFT_BREAK" },
+              kind = "LIST_ITEM",
+              order = 1,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "list item 1" },
+                  { kind = "SOFT_BREAK" },
+                },
               },
             },
             {
-              kind = "PARAGRAPH",
-              children = {
-                { kind = "TEXT", text = "list item 2" },
-                { kind = "SOFT_BREAK" },
+              kind = "LIST_ITEM",
+              order = 2,
+              content = {
+
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "list item 2" },
+                  { kind = "SOFT_BREAK" },
+                },
               },
             },
             {
-              kind = "PARAGRAPH",
-              children = {
-                { kind = "TEXT", text = "list item 3 " },
-                {
-                  kind = "EMPHASISED_TEXT",
-                  emphasis = "BOLD",
-                  children = {
-                    {
-                      kind = "TEXT",
-                      text = "(multiline)",
+              kind = "LIST_ITEM",
+              order = 3,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "list item 3 " },
+                  {
+                    kind = "EMPHASISED_TEXT",
+                    emphasis = "BOLD",
+                    children = {
+                      {
+                        kind = "TEXT",
+                        text = "(multiline)",
+                      },
                     },
                   },
+                  { kind = "LINE_BREAK" },
+                  { kind = "TEXT", text = "line 2" },
+                  { kind = "LINE_BREAK" },
+                  { kind = "TEXT", text = "line 3" },
                 },
-                { kind = "LINE_BREAK" },
-                { kind = "TEXT", text = "line 2" },
-                { kind = "LINE_BREAK" },
-                { kind = "TEXT", text = "line 3" },
               },
             },
           },
@@ -178,7 +191,7 @@ Another paragraph]])
       })
     end)
 
-    it("parses nested lists #only", function()
+    it("parses nested unordered lists", function()
       local ast = parse([[
 - kek
 - ### pek
@@ -197,18 +210,26 @@ Another paragraph]])
           list_type = "UNORDERED",
           items = {
             {
-              kind = "PARAGRAPH",
-              children = {
-                { kind = "TEXT", text = "kek" },
-                { kind = "SOFT_BREAK" },
+              kind = "LIST_ITEM",
+              order = 1,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "kek" },
+                  { kind = "SOFT_BREAK" },
+                },
               },
             },
             {
-              kind = "HEADING",
-              level = 3,
-              children = {
-                { kind = "TEXT", text = "pek" },
-                { kind = "SOFT_BREAK" },
+              kind = "LIST_ITEM",
+              order = 2,
+              content = {
+                kind = "HEADING",
+                level = 3,
+                children = {
+                  { kind = "TEXT", text = "pek" },
+                  { kind = "SOFT_BREAK" },
+                },
               },
             },
             {
@@ -217,10 +238,14 @@ Another paragraph]])
               list_type = "UNORDERED",
               items = {
                 {
-                  kind = "PARAGRAPH",
-                  children = {
-                    { kind = "TEXT", text = "nested 1" },
-                    { kind = "SOFT_BREAK" },
+                  kind = "LIST_ITEM",
+                  order = 1,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 1" },
+                      { kind = "SOFT_BREAK" },
+                    },
                   },
                 },
                 {
@@ -229,33 +254,49 @@ Another paragraph]])
                   list_type = "UNORDERED",
                   items = {
                     {
-                      kind = "PARAGRAPH",
-                      children = {
-                        { kind = "TEXT", text = "nested 1.1" },
-                        { kind = "SOFT_BREAK" },
+                      kind = "LIST_ITEM",
+                      order = 1,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 1.1" },
+                          { kind = "SOFT_BREAK" },
+                        },
                       },
                     },
                     {
-                      kind = "PARAGRAPH",
-                      children = {
-                        { kind = "TEXT", text = "nested 1.2" },
-                        { kind = "SOFT_BREAK" },
+                      kind = "LIST_ITEM",
+                      order = 2,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 1.2" },
+                          { kind = "SOFT_BREAK" },
+                        },
                       },
                     },
                   },
                 },
                 {
-                  kind = "PARAGRAPH",
-                  children = {
-                    { kind = "TEXT", text = "nested 2" },
-                    { kind = "SOFT_BREAK" },
+                  kind = "LIST_ITEM",
+                  order = 2,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 2" },
+                      { kind = "SOFT_BREAK" },
+                    },
                   },
                 },
                 {
-                  kind = "PARAGRAPH",
-                  children = {
-                    { kind = "TEXT", text = "nested 3" },
-                    { kind = "SOFT_BREAK" },
+                  kind = "LIST_ITEM",
+                  order = 3,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 3" },
+                      { kind = "SOFT_BREAK" },
+                    },
                   },
                 },
                 {
@@ -264,10 +305,14 @@ Another paragraph]])
                   list_type = "UNORDERED",
                   items = {
                     {
-                      kind = "PARAGRAPH",
-                      children = {
-                        { kind = "TEXT", text = "nested 3.1" },
-                        { kind = "SOFT_BREAK" },
+                      kind = "LIST_ITEM",
+                      order = 1,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 3.1" },
+                          { kind = "SOFT_BREAK" },
+                        },
                       },
                     },
                   },
@@ -275,9 +320,505 @@ Another paragraph]])
               },
             },
             {
-              kind = "PARAGRAPH",
-              children = {
-                { kind = "TEXT", text = "wow" },
+              kind = "LIST_ITEM",
+              order = 3,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "wow" },
+                },
+              },
+            },
+          },
+        },
+      })
+    end)
+
+    it("parses ordered lists", function()
+      local ast = parse(
+        "1. list item 1\n2. list item 2\n345. list item 3 **(multiline)**\\\nline 2\\\nline 3"
+      )
+
+      assert.are.same(ast, {
+        {
+          kind = "LIST",
+          level = 1,
+          list_type = "ORDERED",
+          items = {
+            {
+              kind = "LIST_ITEM",
+              order = 1,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "list item 1" },
+                  { kind = "SOFT_BREAK" },
+                },
+              },
+            },
+            {
+              kind = "LIST_ITEM",
+              order = 2,
+              content = {
+
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "list item 2" },
+                  { kind = "SOFT_BREAK" },
+                },
+              },
+            },
+            {
+              kind = "LIST_ITEM",
+              order = 3,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "list item 3 " },
+                  {
+                    kind = "EMPHASISED_TEXT",
+                    emphasis = "BOLD",
+                    children = {
+                      {
+                        kind = "TEXT",
+                        text = "(multiline)",
+                      },
+                    },
+                  },
+                  { kind = "LINE_BREAK" },
+                  { kind = "TEXT", text = "line 2" },
+                  { kind = "LINE_BREAK" },
+                  { kind = "TEXT", text = "line 3" },
+                },
+              },
+            },
+          },
+        },
+      })
+    end)
+
+    it("parses nested ordered lists", function()
+      local ast = parse([[
+1. kek
+2. ### pek
+  1. nested 1
+    1. nested 1.1
+    2. nested 1.2
+  2. nested 2
+  3. nested 3
+    1. nested 3.1
+3. wow]])
+
+      assert.are.same(ast, {
+        {
+          kind = "LIST",
+          level = 1,
+          list_type = "ORDERED",
+          items = {
+            {
+              kind = "LIST_ITEM",
+              order = 1,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "kek" },
+                  { kind = "SOFT_BREAK" },
+                },
+              },
+            },
+            {
+              kind = "LIST_ITEM",
+              order = 2,
+              content = {
+                kind = "HEADING",
+                level = 3,
+                children = {
+                  { kind = "TEXT", text = "pek" },
+                  { kind = "SOFT_BREAK" },
+                },
+              },
+            },
+            {
+              kind = "LIST",
+              level = 2,
+              list_type = "ORDERED",
+              items = {
+                {
+                  kind = "LIST_ITEM",
+                  order = 1,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 1" },
+                      { kind = "SOFT_BREAK" },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST",
+                  level = 3,
+                  list_type = "ORDERED",
+                  items = {
+                    {
+                      kind = "LIST_ITEM",
+                      order = 1,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 1.1" },
+                          { kind = "SOFT_BREAK" },
+                        },
+                      },
+                    },
+                    {
+                      kind = "LIST_ITEM",
+                      order = 2,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 1.2" },
+                          { kind = "SOFT_BREAK" },
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST_ITEM",
+                  order = 2,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 2" },
+                      { kind = "SOFT_BREAK" },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST_ITEM",
+                  order = 3,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 3" },
+                      { kind = "SOFT_BREAK" },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST",
+                  level = 3,
+                  list_type = "ORDERED",
+                  items = {
+                    {
+                      kind = "LIST_ITEM",
+                      order = 1,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 3.1" },
+                          { kind = "SOFT_BREAK" },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            {
+              kind = "LIST_ITEM",
+              order = 3,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "wow" },
+                },
+              },
+            },
+          },
+        },
+      })
+    end)
+
+    it("parses nested mixed lists", function()
+      local ast = parse([[
+1. kek
+2. ### pek
+  - nested 1
+    1. nested 1.1
+    2. nested 1.2
+  - nested 2
+  - nested 3
+    - nested 3.1
+3. wow]])
+
+      assert.are.same(ast, {
+        {
+          kind = "LIST",
+          level = 1,
+          list_type = "ORDERED",
+          items = {
+            {
+              kind = "LIST_ITEM",
+              order = 1,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "kek" },
+                  { kind = "SOFT_BREAK" },
+                },
+              },
+            },
+            {
+              kind = "LIST_ITEM",
+              order = 2,
+              content = {
+                kind = "HEADING",
+                level = 3,
+                children = {
+                  { kind = "TEXT", text = "pek" },
+                  { kind = "SOFT_BREAK" },
+                },
+              },
+            },
+            {
+              kind = "LIST",
+              level = 2,
+              list_type = "UNORDERED",
+              items = {
+                {
+                  kind = "LIST_ITEM",
+                  order = 1,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 1" },
+                      { kind = "SOFT_BREAK" },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST",
+                  level = 3,
+                  list_type = "ORDERED",
+                  items = {
+                    {
+                      kind = "LIST_ITEM",
+                      order = 1,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 1.1" },
+                          { kind = "SOFT_BREAK" },
+                        },
+                      },
+                    },
+                    {
+                      kind = "LIST_ITEM",
+                      order = 2,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 1.2" },
+                          { kind = "SOFT_BREAK" },
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST_ITEM",
+                  order = 2,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 2" },
+                      { kind = "SOFT_BREAK" },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST_ITEM",
+                  order = 3,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 3" },
+                      { kind = "SOFT_BREAK" },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST",
+                  level = 3,
+                  list_type = "UNORDERED",
+                  items = {
+                    {
+                      kind = "LIST_ITEM",
+                      order = 1,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 3.1" },
+                          { kind = "SOFT_BREAK" },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            {
+              kind = "LIST_ITEM",
+              order = 3,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "wow" },
+                },
+              },
+            },
+          },
+        },
+      })
+    end)
+
+    it("parses nested mixed lists (flipped)", function()
+      local ast = parse([[
+- kek
+- ### pek
+  1. nested 1
+    - nested 1.1
+    - nested 1.2
+  2. nested 2
+  3. nested 3
+    3. nested 3.1
+- wow]])
+
+      assert.are.same(ast, {
+        {
+          kind = "LIST",
+          level = 1,
+          list_type = "UNORDERED",
+          items = {
+            {
+              kind = "LIST_ITEM",
+              order = 1,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "kek" },
+                  { kind = "SOFT_BREAK" },
+                },
+              },
+            },
+            {
+              kind = "LIST_ITEM",
+              order = 2,
+              content = {
+                kind = "HEADING",
+                level = 3,
+                children = {
+                  { kind = "TEXT", text = "pek" },
+                  { kind = "SOFT_BREAK" },
+                },
+              },
+            },
+            {
+              kind = "LIST",
+              level = 2,
+              list_type = "ORDERED",
+              items = {
+                {
+                  kind = "LIST_ITEM",
+                  order = 1,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 1" },
+                      { kind = "SOFT_BREAK" },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST",
+                  level = 3,
+                  list_type = "UNORDERED",
+                  items = {
+                    {
+                      kind = "LIST_ITEM",
+                      order = 1,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 1.1" },
+                          { kind = "SOFT_BREAK" },
+                        },
+                      },
+                    },
+                    {
+                      kind = "LIST_ITEM",
+                      order = 2,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 1.2" },
+                          { kind = "SOFT_BREAK" },
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST_ITEM",
+                  order = 2,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 2" },
+                      { kind = "SOFT_BREAK" },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST_ITEM",
+                  order = 3,
+                  content = {
+                    kind = "PARAGRAPH",
+                    children = {
+                      { kind = "TEXT", text = "nested 3" },
+                      { kind = "SOFT_BREAK" },
+                    },
+                  },
+                },
+                {
+                  kind = "LIST",
+                  level = 3,
+                  list_type = "ORDERED",
+                  items = {
+                    {
+                      kind = "LIST_ITEM",
+                      order = 1,
+                      content = {
+                        kind = "PARAGRAPH",
+                        children = {
+                          { kind = "TEXT", text = "nested 3.1" },
+                          { kind = "SOFT_BREAK" },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            {
+              kind = "LIST_ITEM",
+              order = 3,
+              content = {
+                kind = "PARAGRAPH",
+                children = {
+                  { kind = "TEXT", text = "wow" },
+                },
               },
             },
           },

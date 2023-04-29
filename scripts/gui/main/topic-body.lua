@@ -2,6 +2,7 @@ local table = require("__flib__/table")
 
 local ast = require("__the418_kb__/markup/parser/ast")
 local constants = require("__the418_kb__/constants")
+
 local topic_body = {}
 
 --- @param Ast AST
@@ -10,13 +11,7 @@ function topic_body.from_ast(Ast)
   local blocks = {}
 
   for _, block in pairs(Ast) do
-    if block.kind == ast.KIND.Paragraph then
-      table.insert(blocks, topic_body.paragraph(block --[[@as Paragraph]]))
-    elseif block.kind == ast.KIND.Heading then
-      table.insert(blocks, topic_body.heading(block --[[@as Heading]]))
-    elseif block.kind == ast.KIND.List then
-      table.insert(blocks, topic_body.list(block --[[@as List]]))
-    end
+    table.insert(blocks, topic_body.block(block))
   end
 
   return {
@@ -30,6 +25,21 @@ function topic_body.from_ast(Ast)
     },
     table.unpack(blocks),
   }
+end
+
+--- @param block Block
+--- @return LuaGuiElement
+function topic_body.block(block)
+  if block.kind == ast.KIND.Paragraph then
+    return topic_body.paragraph(block --[[@as Paragraph]])
+  elseif block.kind == ast.KIND.Heading then
+    return topic_body.heading(block --[[@as Heading]])
+  elseif block.kind == ast.KIND.List then
+    return topic_body.list(block --[[@as List]])
+  else
+    -- TODO
+    return {}
+  end
 end
 
 --- @param paragraph Paragraph
@@ -69,16 +79,21 @@ end
 function topic_body.list(list)
   local items = {} --- @type LuaGuiElement[]
 
+  local style_mods = {
+    left_padding = (list.level - 1) * 6,
+  }
+
   for _, item in pairs(list.items) do
-    table.insert(items, {
-      type = "flow",
-      direction = "horizontal",
-      {
-        type = "label",
-        caption = "•",
-      },
-      topic_body.paragraph(item),
-    })
+    if item.kind == ast.KIND.List then
+      table.insert(items, {
+        type = "flow",
+        direction = "horizontal",
+        style_mods = style_mods,
+        topic_body.list(item --[[@as List]]),
+      })
+    else
+      table.insert(items, topic_body.list_item(list.list_type, item --[[@as ListItem]], list.level))
+    end
   end
 
   return {
@@ -88,6 +103,27 @@ function topic_body.list(list)
       vertical_spacing = 0,
     },
     table.unpack(items),
+  }
+end
+
+--- @param list_type ListType
+--- @param list_item ListItem
+--- @param level uint
+--- @return LuaGuiElement
+function topic_body.list_item(list_type, list_item, level)
+  local marker = list_type == "ORDERED" and tostring(list_item.order) .. "." or "•"
+
+  return {
+    type = "flow",
+    direction = "horizontal",
+    style_mods = {
+      left_padding = (level - 1) * 6,
+    },
+    {
+      type = "label",
+      caption = marker,
+    },
+    topic_body.block(list_item.content),
   }
 end
 

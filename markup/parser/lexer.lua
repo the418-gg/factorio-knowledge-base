@@ -1,5 +1,4 @@
 local token = require("__the418_kb__/markup/parser/token")
-local serpent = require("serpent")
 
 --- @class Lexer
 local Lexer = {}
@@ -16,8 +15,6 @@ end
 --- @param is_escaped true?
 --- @return Token
 function Lexer:get_current_token(is_escaped)
-  -- print("CURCH" .. self.current_char)
-  -- print("TOPLV" .. tostring(self.is_beginning_of_line))
   if self.current_char == "" then
     return { kind = token.KIND.EOF }
   elseif self.current_char == "\\" then
@@ -34,6 +31,8 @@ function Lexer:get_current_token(is_escaped)
     -- TODO rename this? since technically in the context of lists it's not a "beginning of line"
     self.is_beginning_of_line = true
     return { kind = token.KIND.ListItemUnordered }
+  elseif self.is_beginning_of_line and self:current_char_is_digit() then
+    return self:try_read_ordered_list_item()
   elseif self.is_beginning_of_line and self.current_char == "\n" then
     return { kind = token.KIND.HardBreak }
   elseif self.current_char == "\n" then
@@ -105,6 +104,29 @@ function Lexer:try_read_heading()
 end
 
 --- @private
+--- @return Token
+function Lexer:try_read_ordered_list_item()
+  local initial_position = self.position
+  while self:current_char_is_digit() do
+    self:read_char()
+  end
+
+  if self.current_char == "." and self:peek_char() == " " then
+    self:read_char()
+    self.is_beginning_of_line = true
+    return {
+      kind = token.KIND.ListItemOrdered,
+      value = string.sub(self.input, initial_position, self.position - 2),
+    }
+  else
+    return {
+      kind = token.KIND.Text,
+      value = string.sub(self.input, initial_position, self.position - 1) .. self:read_text(),
+    }
+  end
+end
+
+--- @private
 --- @return string
 function Lexer:read_text()
   local text = ""
@@ -154,6 +176,21 @@ function Lexer:skip_whitespace()
       break
     end
   end
+end
+
+--- @return boolean
+--- @private
+function Lexer:current_char_is_digit()
+  return self.current_char == "0"
+    or self.current_char == "1"
+    or self.current_char == "2"
+    or self.current_char == "3"
+    or self.current_char == "4"
+    or self.current_char == "5"
+    or self.current_char == "6"
+    or self.current_char == "7"
+    or self.current_char == "8"
+    or self.current_char == "9"
 end
 
 local lexer = {}
