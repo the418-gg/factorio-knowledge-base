@@ -23,7 +23,14 @@ function topic_body.from_ast(Ast)
       extra_padding_when_activated = 0,
       vertically_stretchable = "on",
     },
-    table.unpack(blocks),
+    {
+      type = "flow",
+      direction = "vertical",
+      style_mods = {
+        vertical_spacing = 16,
+      },
+      table.unpack(blocks),
+    },
   }
 end
 
@@ -36,6 +43,8 @@ function topic_body.block(block)
     return topic_body.heading(block --[[@as Heading]])
   elseif block.kind == ast.KIND.List then
     return topic_body.list(block --[[@as List]])
+  elseif block.kind == ast.KIND.HorizontalRule then
+    return topic_body.horizontal_rule()
   else
     -- TODO
     return {}
@@ -118,12 +127,25 @@ function topic_body.list_item(list_type, list_item, level)
     direction = "horizontal",
     style_mods = {
       left_padding = (level - 1) * 6,
+      vertical_align = "center",
     },
     {
       type = "label",
       caption = marker,
     },
     topic_body.block(list_item.content),
+  }
+end
+
+--- @return LuaGuiElement
+function topic_body.horizontal_rule()
+  return {
+    type = "line",
+    style = "inside_shallow_frame_with_padding_line",
+    style_mods = {
+      left_margin = 0,
+      right_margin = 0,
+    },
   }
 end
 

@@ -62,7 +62,7 @@ end
 
 describe("FactorioMark", function()
   it("should parse markdown", function()
-    local ast = parse("## Heading 2\n\n**kek** pek")
+    local ast = parse("## Heading 2\n\n---\n**kek** pek")
     assert.are.same(ast, {
       {
         kind = "HEADING",
@@ -70,6 +70,9 @@ describe("FactorioMark", function()
         children = {
           { kind = "TEXT", text = "Heading 2" },
         },
+      },
+      {
+        kind = "HORIZONTAL_RULE",
       },
       {
         kind = "PARAGRAPH",
@@ -85,6 +88,54 @@ describe("FactorioMark", function()
         },
       },
     })
+  end)
+
+  describe("not quite the right items", function()
+    it("should parse as text correctly", function()
+      local ast = parse([[
+#Heading 1
+--
+nice
+-- nice
+-wow
+1.such]])
+      assert.are.same(ast, {
+        {
+          kind = "PARAGRAPH",
+          children = {
+            {
+              kind = "TEXT",
+              text = "#Heading 1",
+            },
+            { kind = "SOFT_BREAK" },
+            {
+              kind = "TEXT",
+              text = "--",
+            },
+            { kind = "SOFT_BREAK" },
+            {
+              kind = "TEXT",
+              text = "nice",
+            },
+            { kind = "SOFT_BREAK" },
+            {
+              kind = "TEXT",
+              text = "-- nice",
+            },
+            { kind = "SOFT_BREAK" },
+            {
+              kind = "TEXT",
+              text = "-wow",
+            },
+            { kind = "SOFT_BREAK" },
+            {
+              kind = "TEXT",
+              text = "1.such",
+            },
+          },
+        },
+      })
+    end)
   end)
 
   describe("paragraphs", function()
@@ -822,6 +873,28 @@ Another paragraph]])
               },
             },
           },
+        },
+      })
+    end)
+  end)
+
+  describe("specific cases #only", function()
+    it("should parse content after heading", function()
+      local ast = parse([[
+# heading 1
+---]])
+
+      assert.are.same(ast, {
+        {
+          kind = "HEADING",
+          level = 1,
+          children = {
+            { kind = "TEXT", text = "heading 1" },
+            { kind = "SOFT_BREAK" },
+          },
+        },
+        {
+          kind = "HORIZONTAL_RULE",
         },
       })
     end)

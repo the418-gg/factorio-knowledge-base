@@ -19,7 +19,6 @@ function Parser:parse_document()
     if block then
       table.insert(blocks, block)
     end
-    self:next_token()
   end
 
   return blocks
@@ -48,6 +47,9 @@ function Parser:parse_block()
     return self:parse_list("ORDERED")
   elseif self.current_token.kind == token.KIND.HardBreak then
     self:next_token()
+  elseif self.current_token.kind == token.KIND.HorizontalRule then
+    self:next_token()
+    return { kind = ast.KIND.HorizontalRule }
   else
     return self:parse_paragraph()
   end

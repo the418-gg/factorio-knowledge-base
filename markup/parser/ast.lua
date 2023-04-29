@@ -27,7 +27,10 @@
 --- @field order uint
 --- @field content Block
 
---- @alias Block Heading | Paragraph | List
+--- @class HorizontalRule
+--- @field kind "HORIZONTAL_RULE"
+
+--- @alias Block Heading | Paragraph | List | HorizontalRule
 
 --- @class Text
 --- @field kind "TEXT"
@@ -61,6 +64,7 @@ ast.KIND = {
   EmphasisedText = "EMPHASISED_TEXT",
   SoftBreak = "SOFT_BREAK",
   LineBreak = "LINE_BREAK",
+  HorizontalRule = "HORIZONTAL_RULE",
 }
 
 return ast

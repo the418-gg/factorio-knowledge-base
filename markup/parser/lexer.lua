@@ -26,11 +26,17 @@ function Lexer:get_current_token(is_escaped)
     return { kind = token.KIND.DoubleWhitespace }
   elseif self.is_beginning_of_line and self.current_char == "#" then
     return self:try_read_heading()
-  elseif self.is_beginning_of_line and self.current_char == "-" and self:peek_char() == " " then
-    self:read_char()
-    -- TODO rename this? since technically in the context of lists it's not a "beginning of line"
-    self.is_beginning_of_line = true
-    return { kind = token.KIND.ListItemUnordered }
+  elseif self.is_beginning_of_line and self.current_char == "-" then
+    if self:peek_char() == " " then
+      self:read_char()
+      -- TODO rename this? since technically in the context of lists it's not a "beginning of line"
+      self.is_beginning_of_line = true
+      return { kind = token.KIND.ListItemUnordered }
+    elseif self:peek_char() == "-" then
+      return self:try_read_horizontal_rule()
+    else
+      return { kind = token.KIND.Text, value = self:read_text() }
+    end
   elseif self.is_beginning_of_line and self:current_char_is_digit() then
     return self:try_read_ordered_list_item()
   elseif self.is_beginning_of_line and self.current_char == "\n" then
@@ -124,6 +130,24 @@ function Lexer:try_read_ordered_list_item()
       value = string.sub(self.input, initial_position, self.position - 1) .. self:read_text(),
     }
   end
+end
+
+--- @private
+--- @return Token
+function Lexer:try_read_horizontal_rule()
+  local initial_position = self.position
+  self:read_char() --- first '-'
+  if self:peek_char() == "-" then
+    self:read_char() -- second '-'
+    if self:peek_char() == "\n" or self:peek_char() == "" then
+      return { kind = token.KIND.HorizontalRule }
+    end
+  end
+
+  return {
+    kind = token.KIND.Text,
+    value = string.sub(self.input, initial_position, self.position - 1) .. self:read_text(),
+  }
 end
 
 --- @private

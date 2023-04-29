@@ -19,6 +19,7 @@ token.KIND = {
   EmphasisBold = "**",
   ListItemUnordered = "-",
   ListItemOrdered = "__LIST_ITEM_ORDERED__",
+  HorizontalRule = "---",
 }
 
 --- @class Token
