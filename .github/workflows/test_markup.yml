@@ -12,7 +12,7 @@ jobs:
       - name: Setup ‘lua’
         uses: leafo/gh-actions-lua@v9
         with:
-          luaVersion: "5.1"
+          luaVersion: "5.4"
       - name: Setup ‘luarocks’
         uses: leafo/gh-actions-luarocks@v4
       - name: Setup dependencies
