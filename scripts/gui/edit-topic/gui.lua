@@ -1,7 +1,6 @@
 local actions = require("__the418_kb__/scripts/gui/edit-topic/actions")
 local helpers = require("__the418_kb__/scripts/gui/edit-topic/helpers")
 local player_gui = require("__the418_kb__/scripts/player-gui")
-local test = require("__the418_kb__/markup/test")
 
 --- @class EditTopicsGui
 local EditTopicsGui = {}
@@ -9,21 +8,6 @@ local EditTopicsGui = {}
 EditTopicsGui.actions = actions
 
 function EditTopicsGui:show()
-  local Topic = self.state.topic
-
-  if Topic then
-    test.test(Topic.body)
-  end
-
-  -- if Topic then
-  --   local chars = {}
-  --   for i = 1, #Topic.body do
-  --     chars[i] = Topic.body:sub(i, i)
-  --   end
-
-  --   game.print(serpent.block(chars))
-  -- end
-
   self.refs.window.bring_to_front()
   self.refs.window.visible = true
   self.state.is_visible = true

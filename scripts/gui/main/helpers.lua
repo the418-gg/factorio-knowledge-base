@@ -1,7 +1,7 @@
 local gui = require("__flib__/gui")
 local templates = require("__the418_kb__/scripts/gui/main/templates")
 local topic_body = require("__the418_kb__/scripts/gui/main/topic-body")
-local test = require("__the418_kb__/markup/test")
+local markup = require("__the418_kb__/markup/markup")
 
 local helpers = {}
 
@@ -31,8 +31,7 @@ function helpers.build_selected_topic_contents(Gui)
   Gui.refs.current_topic_contents.clear()
   if Gui.state.selected_topic_id then
     local Topic = global.topics[Gui.state.selected_topic_id]
-    local ast = test.parse(Topic.body)
-    game.print("AST" .. serpent.block(ast))
+    local ast = markup.parse(Topic.body)
     local contents = topic_body.from_ast(ast)
     gui.add(Gui.refs.current_topic_contents, templates.topic_contents(Topic, contents))
   else
