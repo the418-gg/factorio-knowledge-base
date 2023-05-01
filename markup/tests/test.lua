@@ -43,8 +43,9 @@ local function get_mod_name(modname)
 end
 local function mod_searcher(original)
   -- First search for `modname.some.path`
-  local modname = get_mod_name(original:gsub("%_%_([%w_]+)%_%_", "%1"))
-  print("modname = " .. modname)
+  local modname = get_mod_name(original:gsub("%_%_([%w_]+)%_%_", function(name)
+    return get_mod_name(name)
+  end))
   local filepath = package.searchpath(modname, package.path, ".", "/")
   if not filepath then
     -- Then search for `some.path`
