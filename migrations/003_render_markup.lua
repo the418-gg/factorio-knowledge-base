@@ -7,6 +7,7 @@ on_tick_n.init()
 
 for _, topic in pairs(global.topics) do
   topic.body_ast = markup.parse(topic.body)
+  topic.is_body_parsed = true
 end
 
 migrations.generic()

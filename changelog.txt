@@ -1,6 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.1
+Date: 01. 05. 2023
+  Bugfixes:
+    - Fix GUI not being closed after saving an old topic without editing its contents
+---------------------------------------------------------------------------------------------------
 Version: 0.4.0
-Date: 25. 04. 2023
+Date: 01. 05. 2023
   Major Features:
     - Bare-bones markup support (markup-like)
   Minor Features:
