@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.0
 Date: 25. 04. 2023
+  Major Features:
+    - Bare-bones markup support (markup-like)
   Minor Features:
     - Added a shortcut to toggle interface to the shortcut bar
 ---------------------------------------------------------------------------------------------------
