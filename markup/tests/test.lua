@@ -70,7 +70,7 @@ local function parse(input)
 end
 
 describe("FactorioMark", function()
-  it("should parse markdown #only", function()
+  it("should parse markdown", function()
     local ast = parse("## Heading 2\n\n---\n**kek** pek")
     assert.are.same(ast, {
       {
@@ -887,7 +887,7 @@ Another paragraph]])
     end)
   end)
 
-  describe("code blocks #only", function()
+  describe("code blocks", function()
     describe("inline code", function()
       it("should parse inline code", function()
         local ast = parse("`let x = 1`")

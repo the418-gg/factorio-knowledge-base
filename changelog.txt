@@ -5,6 +5,7 @@ Date: 25. 04. 2023
     - Bare-bones markup support (markup-like)
   Minor Features:
     - Added a shortcut to toggle interface to the shortcut bar
+    - Small quality of life improvements
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 24. 04. 2023

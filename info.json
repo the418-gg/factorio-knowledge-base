@@ -9,6 +9,11 @@
   "dependencies": ["base >= 1.1.80", "flib >= 0.12.6"],
   "description": "A place to document your base",
   "package": {
-    "ignore": ["markup/factoriomark-0.1.0-1.rockspec", "markup/tests"]
+    "ignore": [
+      "markup/factoriomark-0.1.0-1.rockspec",
+      "markup/tests",
+      ".github",
+      "stylua.toml"
+    ]
   }
 }
