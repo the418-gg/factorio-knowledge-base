@@ -34,9 +34,16 @@ do
   table.sort(paths, special_sort)
   package.path = table.concat(paths, ";")
 end
+local function get_mod_name(modname)
+  if modname == "the418_kb" then
+    return os.getenv("ROOT_DIR_NAME") or "the418_kb"
+  else
+    return modname
+  end
+end
 local function mod_searcher(original)
   -- First search for `modname.some.path`
-  local modname = original:gsub("%_%_([%w_]+)%_%_", "%1")
+  local modname = get_mod_name(original:gsub("%_%_([%w_]+)%_%_", "%1"))
   local filepath = package.searchpath(modname, package.path, ".", "/")
   if not filepath then
     -- Then search for `some.path`

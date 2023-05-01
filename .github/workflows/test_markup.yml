@@ -2,6 +2,9 @@ on: [push, pull_request]
 
 name: Test markup parser
 
+env:
+  ROOT_DIR_NAME: factorio-knowledge-base
+
 jobs:
   test:
     name: Test
