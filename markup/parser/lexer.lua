@@ -310,4 +310,9 @@ function lexer.new(input)
   return self
 end
 
+--- @param self Lexer
+function lexer.load(self)
+  setmetatable(self, { __index = Lexer })
+end
+
 return lexer

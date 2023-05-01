@@ -10,6 +10,9 @@ local templates = {}
 --- @field body_textfield LuaGuiElement
 --- @field parent_dropdown_container LuaGuiElement
 --- @field parent_dropdown LuaGuiElement
+--- @field cancel_button LuaGuiElement
+--- @field delete_button LuaGuiElement?
+--- @field confirm_button LuaGuiElement
 
 --- @param Topic Topic?
 --- @param available_parents Topic[]
@@ -105,6 +108,7 @@ function templates.render(Topic, available_parents, currently_selected_topic_id)
         {
           type = "button",
           style = "back_button",
+          ref = { "cancel_button" },
           caption = { "gui.cancel" },
           actions = {
             on_click = { gui = "edit_topic", action = "close" },
@@ -118,6 +122,7 @@ function templates.render(Topic, available_parents, currently_selected_topic_id)
         Topic and {
           type = "button",
           style = "the418_kb__red_dialog_button",
+          ref = { "delete_button" },
           caption = { "gui.delete" },
           actions = {
             on_click = { gui = "edit_topic", action = "delete" },
@@ -131,6 +136,7 @@ function templates.render(Topic, available_parents, currently_selected_topic_id)
         {
           type = "button",
           style = "confirm_button",
+          ref = { "confirm_button" },
           caption = { "gui.confirm" },
           actions = {
             on_click = { gui = "edit_topic", action = "confirm" },

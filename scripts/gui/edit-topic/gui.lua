@@ -23,6 +23,17 @@ function EditTopicsGui:update()
   self.state.available_parents =
     helpers.make_available_parents(global.public.top_level_topic_ids, self.state.topic)
   helpers.build_parent_selector(self)
+  helpers.update_confirm_button(self)
+
+  local topic = self.state.topic or self.state.new_topic
+  if not topic then
+    return
+  end
+
+  if self.state.is_awaiting_parse and topic.is_body_parsed then
+    self.state.is_awaiting_parse = false
+    self:destroy()
+  end
 end
 
 function EditTopicsGui:destroy()
@@ -31,6 +42,10 @@ function EditTopicsGui:destroy()
   end
   if self.state.topic then
     self.state.topic:unlock()
+    player_gui.update_all_topics()
+  end
+  if self.state.new_topic then
+    self.parent.state.selected_topic_id = self.state.new_topic.id
     player_gui.update_all_topics()
   end
 

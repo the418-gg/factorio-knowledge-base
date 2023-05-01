@@ -1,16 +1,20 @@
 local gui = require("__flib__/gui")
+local on_tick_n = require("__flib__/on-tick-n")
 
 local constants = require("__the418_kb__/constants")
 local migrations = require("__the418_kb__/scripts/migrations")
 local player_data = require("__the418_kb__/scripts/player-data")
 local player_gui = require("__the418_kb__/scripts/player-gui")
 local topic = require("__the418_kb__/scripts/topic")
+local topic_tasks = require("__the418_kb__/scripts/topic-tasks")
 local topics_gui_index = require("__the418_kb__/scripts/gui/main/index")
 local edit_topic_gui_index = require("__the418_kb__/scripts/gui/edit-topic/index")
 local confirm_delete_topic_gui_index =
   require("__the418_kb__/scripts/gui/confirm-delete-topic/index")
 
 script.on_init(function()
+  on_tick_n.init()
+
   global.public = {
     top_level_topic_ids = { 1 },
   }
@@ -88,6 +92,15 @@ script.on_event("the418-kb--linked-confirm-gui", function(event)
 end)
 
 script.on_event(defines.events.on_tick, function(event)
+  local tasks = on_tick_n.retrieve(event.tick)
+  if tasks then
+    for _, task in pairs(tasks) do
+      if task.type == "parse_topic_body" then
+        topic_tasks.handle(task)
+      end
+    end
+  end
+
   if event.tick % constants.topic_lock_update_interval ~= 0 then
     return
   end

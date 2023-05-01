@@ -24,6 +24,18 @@ function Parser:parse_document()
   return blocks
 end
 
+--- @return (Block | nil | "DONE")
+function Parser:parse_document_step()
+  if self.current_token.kind == token.KIND.EOF then
+    return "DONE"
+  end
+
+  local block = self:parse_block()
+  if block then
+    return block
+  end
+end
+
 --- @package
 function Parser:next_token()
   self.current_token = self.peek_token
@@ -289,6 +301,13 @@ function parser.new(lexer)
   self:next_token()
   self:next_token()
 
+  return self
+end
+
+--- @param self Parser
+--- @return Parser
+function parser.load(self)
+  setmetatable(self, { __index = Parser })
   return self
 end
 
