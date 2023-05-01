@@ -170,7 +170,7 @@ function Lexer:try_read_inline_code()
       self.read_position = initial_position + 1
       return {
         kind = token.KIND.Text,
-        value = string.sub(self.input, initial_position, initial_position) .. self:read_text(),
+        value = self:read_text(),
       }
     end
     self:read_char()
@@ -227,20 +227,13 @@ end
 function Lexer:read_text()
   local text = ""
 
-  while true do
-    text = text .. self.current_char --- @type string
-    if
-      self:peek_char() == "\n"
-      or self:peek_char() == ""
-      or self:peek_char() == "*"
-      or self:peek_char() == "`"
-      or self:peek_char() == "\\"
-    then
-      return text
-    end
+  text = string.gsub(string.sub(self.input, self.position), "([^*^\n^\\^`]+)(.*)", "%1")
 
-    self:read_char()
-  end
+  self.position = self.position + #text - 2
+  self.read_position = self.position + 1
+  self:read_char()
+
+  return text
 end
 
 --- @private

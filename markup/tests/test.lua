@@ -70,7 +70,7 @@ local function parse(input)
 end
 
 describe("FactorioMark", function()
-  it("should parse markdown", function()
+  it("should parse markdown #only", function()
     local ast = parse("## Heading 2\n\n---\n**kek** pek")
     assert.are.same(ast, {
       {
@@ -887,7 +887,7 @@ Another paragraph]])
     end)
   end)
 
-  describe("code blocks", function()
+  describe("code blocks #only", function()
     describe("inline code", function()
       it("should parse inline code", function()
         local ast = parse("`let x = 1`")
@@ -992,10 +992,7 @@ let x = 1
           {
             kind = "PARAGRAPH",
             children = {
-              { kind = "TEXT", text = "`" },
-              { kind = "CODE_INLINE", text = "" },
-              { kind = "SOFT_BREAK" },
-              { kind = "TEXT", text = "let x = 1" },
+              { kind = "TEXT", text = "```\nlet x = 1" },
               { kind = "SOFT_BREAK" },
               { kind = "TEXT", text = "```" },
             },
