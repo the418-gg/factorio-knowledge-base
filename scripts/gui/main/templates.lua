@@ -123,7 +123,8 @@ function templates.render()
 end
 
 --- @param Topic Topic
-function templates.topic_contents(Topic)
+--- @param contents LuaGuiElement
+function templates.topic_contents(Topic, contents)
   local Lock = Topic:get_lock()
 
   return {
@@ -173,15 +174,8 @@ function templates.topic_contents(Topic)
         width = 940,
         padding = 20,
         extra_padding_when_activated = 0,
-        vertically_stretchable = "on",
       },
-      {
-        type = "label",
-        caption = Topic.body,
-        style_mods = {
-          single_line = false,
-        },
-      },
+      contents,
     },
   }
 end

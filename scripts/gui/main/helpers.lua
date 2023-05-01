@@ -1,5 +1,6 @@
 local gui = require("__flib__/gui")
 local templates = require("__the418_kb__/scripts/gui/main/templates")
+local markup = require("__the418_kb__/markup/markup")
 
 local helpers = {}
 
@@ -29,7 +30,8 @@ function helpers.build_selected_topic_contents(Gui)
   Gui.refs.current_topic_contents.clear()
   if Gui.state.selected_topic_id then
     local Topic = global.topics[Gui.state.selected_topic_id]
-    gui.add(Gui.refs.current_topic_contents, templates.topic_contents(Topic))
+    local contents = markup.render(Topic.body_ast or {})
+    gui.add(Gui.refs.current_topic_contents, templates.topic_contents(Topic, contents))
   else
     gui.add(Gui.refs.current_topic_contents, templates.no_topic_area())
   end

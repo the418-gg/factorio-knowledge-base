@@ -37,6 +37,9 @@ function index.new(player, player_table, Topic, ParentGui)
       available_parents = available_parents,
       selected_parent_index = refs.parent_dropdown.selected_index,
       topic = Topic and Topic or nil,
+      new_topic = nil,
+      is_awaiting_parse = false,
+      was_just_shortcut_confirmed = false,
       is_visible = false,
       child = nil, --- @type ConfirmDeleteTopicGui?
     },

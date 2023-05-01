@@ -1,4 +1,7 @@
+local markup = require("__the418_kb__/markup/markup")
+
 local topic_lock = require("__the418_kb__/scripts/topic-lock")
+local topic_tasks = require("__the418_kb__/scripts/topic-tasks")
 local util = require("__the418_kb__/scripts/util")
 
 --- @class Topic
@@ -69,6 +72,24 @@ function Topic:unlock()
   self.lock_ = nil
 end
 
+-- Never set `Topic.body`, always use `Topic:set_body` instead
+--- @param body string
+function Topic:set_body(body)
+  local old_body = self.body
+  self.body = body
+
+  if old_body ~= body then
+    topic_tasks.add(self)
+    self.is_body_parsed = false
+  end
+end
+
+--- @param Ast AST
+function Topic:set_body_ast(Ast)
+  self.body_ast = Ast
+  self.is_body_parsed = true
+end
+
 local topic = {}
 
 --- @param title string
@@ -82,12 +103,15 @@ function topic.new(title, body)
   local self = {
     id = id, --- @type integer
     title = title,
-    body = body,
+    body = nil,
+    body_ast = {}, --- @type AST
+    is_body_parsed = false,
     child_ids = {}, --- @type uint[]
     lock_ = nil,
   }
 
   topic.load(self)
+  self:set_body(body)
   global.topics[id] = self
 
   return self

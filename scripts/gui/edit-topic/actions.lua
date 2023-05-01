@@ -7,6 +7,10 @@ local actions = {}
 
 --- @param Gui EditTopicsGui
 function actions.close(Gui)
+  if Gui.state.was_just_shortcut_confirmed then
+    Gui.state.was_just_shortcut_confirmed = false
+    return
+  end
   if Gui.state.child then
     return
   end
@@ -32,7 +36,7 @@ function actions.confirm(Gui, msg)
   local Topic = Gui.state.topic
   if Topic then
     Topic.title = Gui.refs.title_textfield.text
-    Topic.body = Gui.refs.body_textfield.text
+    Topic:set_body(Gui.refs.body_textfield.text)
 
     local parent_selection_index = Gui.refs.parent_dropdown.selected_index
     local Parent = Topic:get_current_parent()
@@ -54,10 +58,9 @@ function actions.confirm(Gui, msg)
         NewParent:add_child(Topic.id)
       end
     end
-
-    Topic:unlock()
   else
     local NewTopic = topic.new(Gui.refs.title_textfield.text, Gui.refs.body_textfield.text)
+    Gui.state.new_topic = NewTopic
 
     global.topics[NewTopic.id] = NewTopic
     local parent_selection_index = Gui.refs.parent_dropdown.selected_index
@@ -69,13 +72,13 @@ function actions.confirm(Gui, msg)
     end
   end
 
+  Gui.state.is_awaiting_parse = true
   player_gui.update_all_topics()
 
-  -- HACK pressing "E" to confirm will close the GUI that's currently open
+  -- HACK pressing "E" to confirm will attempt to close the GUI that's currently open
   if msg.from == "custom-input" then
     Gui.player.play_sound({ path = "utility/confirm" })
-  else
-    Gui:destroy()
+    Gui.state.was_just_shortcut_confirmed = true
   end
 end
 

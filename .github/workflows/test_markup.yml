@@ -1,0 +1,28 @@
+on: [push, pull_request]
+
+name: Test markup parser
+
+env:
+  ROOT_DIR_NAME: factorio-knowledge-base
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup ‘lua’
+        uses: leafo/gh-actions-lua@v9
+        with:
+          luaVersion: "5.4"
+      - name: Setup ‘luarocks’
+        uses: leafo/gh-actions-luarocks@v4
+      - name: Setup dependencies
+        run: |
+          cd markup
+          luarocks install --only-deps factoriomark-0.1.0-1.rockspec
+      - name: Run tests
+        run: |
+          cd markup
+          busted tests/test.lua

@@ -34,4 +34,32 @@ function helpers.build_parent_selector(Gui)
   gui.add(Gui.refs.parent_dropdown_container, Gui.refs.parent_dropdown)
 end
 
+--- @param Gui EditTopicsGui
+function helpers.update_confirm_button(Gui)
+  local topic = Gui.state.topic or Gui.state.new_topic
+  if not topic then
+    return
+  end
+
+  local confirm_btn = Gui.refs.confirm_button
+  local delete_btn = Gui.refs.delete_button
+  local back_btn = Gui.refs.cancel_button
+
+  if topic.is_body_parsed then
+    confirm_btn.caption = { "gui.confirm" }
+    confirm_btn.enabled = true
+    if delete_btn then
+      delete_btn.enabled = true
+    end
+    back_btn.enabled = true
+  else
+    confirm_btn.caption = { "gui.the418-kb--saving-topic" }
+    confirm_btn.enabled = false
+    if delete_btn then
+      delete_btn.enabled = false
+    end
+    back_btn.enabled = false
+  end
+end
+
 return helpers
