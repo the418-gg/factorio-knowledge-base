@@ -123,7 +123,7 @@ function templates.render()
 end
 
 --- @param Topic Topic
---- @param contents LuaGuiElement -- TODO
+--- @param contents LuaGuiElement
 function templates.topic_contents(Topic, contents)
   local Lock = Topic:get_lock()
 
@@ -167,7 +167,16 @@ function templates.topic_contents(Topic, contents)
         },
       },
     },
-    contents,
+    {
+      type = "scroll-pane",
+      style = "naked_scroll_pane",
+      style_mods = {
+        width = 940,
+        padding = 20,
+        extra_padding_when_activated = 0,
+      },
+      contents,
+    },
   }
 end
 
