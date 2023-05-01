@@ -1,3 +1,5 @@
+local markup = require("__the418_kb__/markup/markup")
+
 local topic_lock = require("__the418_kb__/scripts/topic-lock")
 local util = require("__the418_kb__/scripts/util")
 
@@ -69,6 +71,13 @@ function Topic:unlock()
   self.lock_ = nil
 end
 
+-- Never set `Topic.body`, always use `Topic:set_body` instead
+--- @param body string
+function Topic:set_body(body)
+  self.body = body
+  self.body_ast = markup.parse(body)
+end
+
 local topic = {}
 
 --- @param title string
@@ -85,6 +94,7 @@ function topic.new(title, body)
     body = body,
     child_ids = {}, --- @type uint[]
     lock_ = nil,
+    body_ast = markup.parse(body), --- @type AST
   }
 
   topic.load(self)

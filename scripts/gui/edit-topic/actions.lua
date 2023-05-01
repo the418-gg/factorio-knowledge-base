@@ -32,7 +32,7 @@ function actions.confirm(Gui, msg)
   local Topic = Gui.state.topic
   if Topic then
     Topic.title = Gui.refs.title_textfield.text
-    Topic.body = Gui.refs.body_textfield.text
+    Topic:set_body(Gui.refs.body_textfield.text)
 
     local parent_selection_index = Gui.refs.parent_dropdown.selected_index
     local Parent = Topic:get_current_parent()
