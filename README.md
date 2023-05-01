@@ -1,3 +1,7 @@
+![Factorio Mod Portal mod version](https://img.shields.io/factorio-mod-portal/v/the418_kb?label=mod%20portal)
+![Factorio Mod Portal mod downloads](https://img.shields.io/factorio-mod-portal/dt/the418_kb)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/the418-gg/factorio-knowledge-base/test_markup.yml?label=tests)
+
 # Factorio knowledge base
 
 A wiki-like system for documenting massive Factorio bases. Very raw right now, just an initial release so I can use it myself.
