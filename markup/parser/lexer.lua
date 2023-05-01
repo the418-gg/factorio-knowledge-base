@@ -194,13 +194,9 @@ function Lexer:try_read_code_block()
       while true do
         if self.current_char == "" then
           local result = {
-            kind = token.KIND.Text,
-            value = string.sub(self.input, initial_position, initial_position + 2)
-              .. self:read_text(),
+            kind = token.KIND.CodeBlock,
+            value = string.sub(self.input, initial_position + 4, self.position),
           }
-          self.position = initial_position + 1
-          self.read_position = initial_position + 2
-          self:next_token()
           return result
         elseif self.current_char == "`" and self:peek_char() == "`" then
           self:read_char()

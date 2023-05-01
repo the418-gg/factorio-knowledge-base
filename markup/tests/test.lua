@@ -887,7 +887,7 @@ Another paragraph]])
     end)
   end)
 
-  describe("code blocks #only", function()
+  describe("code blocks", function()
     describe("inline code", function()
       it("should parse inline code", function()
         local ast = parse("`let x = 1`")
@@ -1010,12 +1010,8 @@ let x = 1
 let x = 1]])
           assert.are.same(ast, {
             {
-              kind = "PARAGRAPH",
-              children = {
-                { kind = "TEXT", text = "```" },
-                { kind = "SOFT_BREAK" },
-                { kind = "TEXT", text = "let x = 1" },
-              },
+              kind = "CODE_BLOCK",
+              text = "let x = 1",
             },
           })
         end)
@@ -1027,14 +1023,8 @@ let x = 1
 `]])
           assert.are.same(ast, {
             {
-              kind = "PARAGRAPH",
-              children = {
-                { kind = "TEXT", text = "```" },
-                { kind = "SOFT_BREAK" },
-                { kind = "TEXT", text = "let x = 1" },
-                { kind = "SOFT_BREAK" },
-                { kind = "TEXT", text = "`" },
-              },
+              kind = "CODE_BLOCK",
+              text = "let x = 1\n`",
             },
           })
         end)
@@ -1046,14 +1036,8 @@ let x = 1
 ``]])
           assert.are.same(ast, {
             {
-              kind = "PARAGRAPH",
-              children = {
-                { kind = "TEXT", text = "```" },
-                { kind = "SOFT_BREAK" },
-                { kind = "TEXT", text = "let x = 1" },
-                { kind = "SOFT_BREAK" },
-                { kind = "TEXT", text = "``" },
-              },
+              kind = "CODE_BLOCK",
+              text = "let x = 1\n``",
             },
           })
         end)
@@ -1065,14 +1049,8 @@ let x = 1
 ```nope]])
           assert.are.same(ast, {
             {
-              kind = "PARAGRAPH",
-              children = {
-                { kind = "TEXT", text = "```" },
-                { kind = "SOFT_BREAK" },
-                { kind = "TEXT", text = "let x = 1" },
-                { kind = "SOFT_BREAK" },
-                { kind = "TEXT", text = "```nope" },
-              },
+              kind = "CODE_BLOCK",
+              text = "let x = 1\n```nope",
             },
           })
         end)

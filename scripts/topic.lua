@@ -74,8 +74,10 @@ end
 -- Never set `Topic.body`, always use `Topic:set_body` instead
 --- @param body string
 function Topic:set_body(body)
+  if self.body ~= body then
+    self.body_ast = markup.parse(body)
+  end
   self.body = body
-  self.body_ast = markup.parse(body)
 end
 
 local topic = {}
