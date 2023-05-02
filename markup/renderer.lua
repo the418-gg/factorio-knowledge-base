@@ -125,7 +125,6 @@ function renderer.list_item(list_type, list_item, level)
     direction = "horizontal",
     style_mods = {
       left_padding = (level - 1) * 6,
-      vertical_align = "center",
     },
     {
       type = "label",
