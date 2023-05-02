@@ -171,3 +171,7 @@ script.on_event(defines.events.on_gui_opened, function(event)
     end
   end
 end)
+
+script.on_event(defines.events.on_gui_elem_changed, function(event)
+  game.print(serpent.block(event.element.elem_value))
+end)

@@ -5,6 +5,13 @@ local constants = require("__the418_kb__/constants")
 
 local renderer = {}
 
+local blueprint_sprite_map = {
+  blueprint = "item/blueprint",
+  ["blueprint_book"] = "item/blueprint-book",
+  ["deconstruction_planner"] = "item/deconstruction-planner",
+  ["upgrade_planner"] = "item/upgrade-planner",
+}
+
 --- @param Ast AST
 --- @return LuaGuiElement
 function renderer.from_ast(Ast)
@@ -165,12 +172,12 @@ function renderer.code_block(block)
 
   return {
     type = "text-box",
+    style = "the418_kb__markup__code_block",
     text = block.text,
     elem_mods = {
       read_only = true,
     },
     style_mods = {
-      horizontally_stretchable = "on",
       height = max_line_length > max_line_length_without_scroll and base_height + 16 or base_height,
       maximal_width = max_width,
     },
@@ -216,10 +223,9 @@ function renderer.inline_content(content, style_mods)
     return {
       {
         type = "label",
+        style = "the418_kb__markup__inline__text",
         caption = content.text,
-        style_mods = table.deep_merge({ {
-          single_line = false,
-        }, style_mods }),
+        style_mods = style_mods,
       },
     }
   elseif content.kind == ast.KIND.EmphasisedText then
@@ -235,10 +241,51 @@ function renderer.inline_content(content, style_mods)
     return {
       {
         type = "label",
+        style = "the418_kb__markup__inline__code",
         caption = content.text,
+      },
+    }
+  elseif content.kind == ast.KIND.FactorioRichText then
+    return {
+      {
+        type = "label",
+        style = "the418_kb__markup__inline__text",
+        caption = "[" .. content.key .. "=" .. content.value .. "]",
+        style_mods = style_mods,
+      },
+    }
+  elseif content.kind == ast.KIND.Blueprint then
+    -- TODO: force blueprints to only appear in block context / table context / row context / etc
+    return {
+      {
+        type = "flow",
+        direction = "vertical",
         style_mods = {
-          single_line = false,
-          font_color = constants.colors.Orange,
+          horizontal_align = "center",
+          vertical_spacing = 4,
+        },
+        {
+          type = "sprite-button",
+          style = "inventory_slot",
+          sprite = blueprint_sprite_map[content.type] or "item/blueprint",
+          style_mods = {
+            padding = 4,
+            width = 80,
+            height = 80,
+          },
+          actions = {
+            on_click = { gui = "topics", action = "test", blueprint_string = content.value },
+          },
+        },
+        {
+          type = "label",
+          caption = content.blueprint_data[content.type].label,
+          style_mods = {
+            width = 80,
+            single_line = false,
+            horizontal_align = "center",
+            horizontally_squashable = true,
+          },
         },
       },
     }

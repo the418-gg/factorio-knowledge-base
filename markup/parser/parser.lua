@@ -243,7 +243,7 @@ function Parser:parse_inline_content_block(till_hard_break, till_token)
       else
         if till_token then
           -- till_token block not finished
-          table.insert(block, 1, { kind = ast.KIND.Text, text = token.to_string(till_token) })
+          table.insert(block, 1, { kind = ast.KIND.Text, text = token.value })
         end
         return block
       end
@@ -258,10 +258,51 @@ end
 function Parser:parse_inline_content()
   if self.current_token.kind == token.KIND.Text then
     return { kind = ast.KIND.Text, text = self.current_token.value }
+  elseif self.current_token.kind == token.KIND.RichText then
+    return self:parse_rich_text()
   elseif self.current_token.kind == token.KIND.SoftBreak then
     return { kind = ast.KIND.SoftBreak }
   elseif self.current_token.kind == token.KIND.LineBreak then
     return { kind = ast.KIND.LineBreak }
+  end
+end
+
+--- @private
+--- @return InlineContent
+function Parser:parse_rich_text()
+  local key = self.current_token.value.key
+  local value = self.current_token.value.value
+
+  if key == "special-item" then
+    -- Blueprint. TODO cannot unit test this! Need to mock `game` or use dependency injection
+    local decoded_bpstring = game.decode_string(string.sub(value, 2)) -- need to ignore the first (version) byte
+    local parsed_blueprint = decoded_bpstring and game.json_to_table(decoded_bpstring) --[[@as table]]
+      or nil
+
+    if not parsed_blueprint then
+      return {
+        kind = ast.KIND.FactorioRichText,
+        key = self.current_token.value.key,
+        value = self.current_token.value.value,
+      }
+    end
+
+    local type = next(parsed_blueprint)
+    -- TODO check type?
+
+    -- Blueprint
+    return {
+      kind = ast.KIND.Blueprint,
+      value = value,
+      type = type,
+      blueprint_data = parsed_blueprint,
+    }
+  else
+    return {
+      kind = ast.KIND.FactorioRichText,
+      key = self.current_token.value.key,
+      value = self.current_token.value.value,
+    }
   end
 end
 

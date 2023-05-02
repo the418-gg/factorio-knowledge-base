@@ -20,32 +20,31 @@ function Lexer:get_current_token(is_escaped)
   elseif self.current_char == "\\" then
     self:read_char()
     return self:get_current_token(true)
-  elseif self.is_beginning_of_line and self.current_char == " " and self:peek_char() == " " then
+  elseif self.is_block_level_context and self.current_char == " " and self:peek_char() == " " then
     self:read_char()
-    self.is_beginning_of_line = true
+    self.is_block_level_context = true
     return { kind = token.KIND.DoubleWhitespace }
-  elseif self.is_beginning_of_line and self.current_char == "#" then
+  elseif self.is_block_level_context and self.current_char == "#" then
     return self:try_read_heading()
-  elseif self.is_beginning_of_line and self.current_char == "-" then
+  elseif self.is_block_level_context and self.current_char == "-" then
     if self:peek_char() == " " then
       self:read_char()
-      -- TODO rename this? since technically in the context of lists it's not a "beginning of line"
-      self.is_beginning_of_line = true
+      self.is_block_level_context = true
       return { kind = token.KIND.ListItemUnordered }
     elseif self:peek_char() == "-" then
       return self:try_read_horizontal_rule()
     else
       return { kind = token.KIND.Text, value = self:read_text() }
     end
-  elseif self.is_beginning_of_line and self.current_char == "`" then
+  elseif self.is_block_level_context and self.current_char == "`" then
     if self:peek_char() == "`" then
       return self:try_read_code_block()
     else
       return self:try_read_inline_code()
     end
-  elseif self.is_beginning_of_line and self:current_char_is_digit() then
+  elseif self.is_block_level_context and self:current_char_is_digit() then
     return self:try_read_ordered_list_item()
-  elseif self.is_beginning_of_line and self.current_char == "\n" then
+  elseif self.is_block_level_context and self.current_char == "\n" then
     return { kind = token.KIND.HardBreak }
   elseif self.current_char == "\n" then
     if is_escaped then
@@ -62,6 +61,8 @@ function Lexer:get_current_token(is_escaped)
       return { kind = token.KIND.EmphasisBold }
     elseif self.current_char == "`" then
       return self:try_read_inline_code()
+    elseif self.current_char == "[" then
+      return self:try_read_rich_text_item()
     else
       return { kind = token.KIND.Text, value = self:read_text() }
     end
@@ -75,9 +76,9 @@ function Lexer:read_char()
   if self.read_position > #self.input then
     self.current_char = ""
   else
-    self.is_beginning_of_line = self.current_char == "\n"
+    self.is_block_level_context = self.current_char == "\n"
       or self.current_char == ""
-      or (self.is_beginning_of_line and self.current_char == " ")
+      or (self.is_block_level_context and self.current_char == " ")
     self.current_char = string.sub(self.input, self.read_position, self.read_position)
   end
 
@@ -127,7 +128,7 @@ function Lexer:try_read_ordered_list_item()
 
   if self.current_char == "." and self:peek_char() == " " then
     self:read_char()
-    self.is_beginning_of_line = true
+    self.is_block_level_context = true
     return {
       kind = token.KIND.ListItemOrdered,
       value = string.sub(self.input, initial_position, self.position - 2),
@@ -223,11 +224,27 @@ function Lexer:try_read_code_block()
 end
 
 --- @private
+--- @return Token
+function Lexer:try_read_rich_text_item()
+  local key, value =
+    string.match(string.sub(self.input, self.position), "%[([%a%-]+)=([^\n^%]]+)%]")
+
+  if key and value then
+    self.position = self.position + #key + #value + 2 -- ([ + #key + = + #value + ]) - 1
+    self.read_position = self.position + 1
+    self:read_char()
+    return { kind = token.KIND.RichText, value = { key = key, value = value } }
+  else
+    return { kind = token.KIND.Text, value = self:read_text() }
+  end
+end
+
+--- @private
 --- @return string
 function Lexer:read_text()
   local text = ""
 
-  text = string.gsub(string.sub(self.input, self.position), "([^*^\n^\\^`]+)(.*)", "%1")
+  text = string.gsub(string.sub(self.input, self.position), "([^*^\n^\\^`^%[]+)(.*)", "%1")
 
   self.position = self.position + #text - 2
   self.read_position = self.position + 1
@@ -294,7 +311,7 @@ function lexer.new(input)
     position = 1,
     read_position = 1,
     current_char = "",
-    is_beginning_of_line = true,
+    is_block_level_context = true,
   }
 
   setmetatable(self, { __index = Lexer })

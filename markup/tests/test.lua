@@ -1055,6 +1055,33 @@ let x = 1
     end)
   end)
 
+  describe("rich text", function()
+    it("should parse rich text", function()
+      local ast = parse("[item=iron-plate]")
+      assert.are.same(ast, {
+        {
+          kind = "PARAGRAPH",
+          children = {
+            { kind = "RICH_TEXT", key = "item", value = "iron-plate" },
+          },
+        },
+      })
+    end)
+
+    it("should work correctly when rich text is unfinished", function()
+      local ast = parse("[item=iron-plate")
+
+      assert.are.same(ast, {
+        {
+          kind = "PARAGRAPH",
+          children = {
+            { kind = "TEXT", text = "[item=iron-plate" },
+          },
+        },
+      })
+    end)
+  end)
+
   describe("specific cases", function()
     it("should parse content after heading", function()
       local ast = parse([[
@@ -1072,6 +1099,20 @@ let x = 1
         },
         {
           kind = "HORIZONTAL_RULE",
+        },
+      })
+    end)
+
+    it("should parse [ inside text", function()
+      local ast = parse("kek pek [ so nice")
+
+      assert.are.same(ast, {
+        {
+          kind = "PARAGRAPH",
+          children = {
+            { kind = "TEXT", text = "kek pek " },
+            { kind = "TEXT", text = "[ so nice" },
+          },
         },
       })
     end)
