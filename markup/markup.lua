@@ -2,7 +2,7 @@ local table = require("__flib__/table")
 
 local lexer = require("__the418_kb__/markup/parser/lexer")
 local parser = require("__the418_kb__/markup/parser/parser")
-local renderer = require("__the418_kb__/markup/renderer")
+local renderer = require("__the418_kb__/markup/renderer/renderer")
 
 local markup = {}
 

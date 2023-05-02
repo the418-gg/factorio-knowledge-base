@@ -1,3 +1,5 @@
+local constants = require("__the418_kb__/constants")
+
 data:extend({
   {
     type = "custom-input",
@@ -147,4 +149,29 @@ styles.the418_kb__label_button_disabled = {
   parent = "the418_kb__label_button",
   font_color = { 128, 128, 128 },
   hovered_font_color = { 128, 128, 128 },
+}
+
+styles.the418_kb__edit_topic_textbox = {
+  type = "textbox_style",
+  height = 200,
+  width = 400,
+  rich_text_setting = "disabled",
+}
+
+styles.the418_kb__markup__inline__text = {
+  type = "label_style",
+  single_line = false,
+  rich_text_setting = "disabled",
+}
+
+styles.the418_kb__markup__inline__code = {
+  type = "label_style",
+  parent = "the418_kb__markup__inline__text",
+  font_color = constants.colors.Orange,
+}
+
+styles.the418_kb__markup__code_block = {
+  type = "textbox_style",
+  horizontally_stretchable = "on",
+  rich_text_setting = "disabled",
 }

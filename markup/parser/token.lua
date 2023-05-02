@@ -23,22 +23,11 @@ token.KIND = {
   -- Inline-level tokens
   EmphasisBold = "**",
   CodeInline = "`",
+  RichText = "__RICH_TEXT__",
 }
 
 --- @class Token
 --- @field kind TokenKind
---- @field value string?
-
---- @param tok Token
---- @return string
-function token.to_string(tok)
-  if tok.kind == token.KIND.Illegal then
-    error("Cannot stringify illegal token")
-  elseif tok.kind == token.KIND.Text then
-    return tok.value or ""
-  else
-    return tok.kind
-  end
-end
+--- @field value any
 
 return token

@@ -56,7 +56,18 @@
 --- @class LineBreak
 --- @field kind "LINE_BREAK"
 
---- @alias InlineContent Text | EmphasisedText | CodeInline | SoftBreak | LineBreak
+--- @class Blueprint
+--- @field kind "BLUEPRINT"
+--- @field value string
+--- @field type "blueprint" | "blueprint_book" | "deconstruction_planner" | "upgrade_planner"
+--- @field blueprint_data table
+
+--- @class FactorioRichText
+--- @field kind "RICH_TEXT"
+--- @field key string
+--- @field value string
+
+--- @alias InlineContent Text | EmphasisedText | CodeInline | SoftBreak | LineBreak | Blueprint | FactorioRichText
 
 --- @alias AST Block[]
 
@@ -74,6 +85,8 @@ ast.KIND = {
   HorizontalRule = "HORIZONTAL_RULE",
   CodeInline = "CODE_INLINE",
   CodeBlock = "CODE_BLOCK",
+  FactorioRichText = "RICH_TEXT",
+  Blueprint = "BLUEPRINT",
 }
 
 return ast

@@ -73,7 +73,7 @@ function templates.render(Topic, available_parents, currently_selected_topic_id)
           { type = "label", caption = { "gui.the418-kb--body" } },
           {
             type = "text-box",
-            style_mods = { height = 200, width = 400 },
+            style = "the418_kb__edit_topic_textbox",
             text = Topic and Topic.body or "",
             elem_mods = { word_wrap = true },
             ref = { "body_textfield" },
