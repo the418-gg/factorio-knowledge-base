@@ -1,6 +1,7 @@
 local table = require("__flib__/table")
 
 local ast = require("__the418_kb__/markup/parser/ast")
+local helpers = require("__the418_kb__/markup/renderer/helpers")
 local constants = require("__the418_kb__/constants")
 
 local renderer = {}
@@ -255,7 +256,6 @@ function renderer.inline_content(content, style_mods)
       },
     }
   elseif content.kind == ast.KIND.Blueprint then
-    -- TODO: force blueprints to only appear in block context / table context / row context / etc
     return {
       {
         type = "flow",
@@ -273,9 +273,8 @@ function renderer.inline_content(content, style_mods)
             width = 80,
             height = 80,
           },
-          actions = {
-            on_click = { gui = "topics", action = "test", blueprint_string = content.value },
-          },
+          tags = { ["the418_kb__markup__blueprint_string"] = content.value },
+          helpers.make_special_item_sprite_icons(content.type, content.blueprint_data),
         },
         {
           type = "label",

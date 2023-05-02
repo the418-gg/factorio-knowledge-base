@@ -56,16 +56,4 @@ function actions.edit_topic(Gui, msg)
   end
 end
 
---- @param Gui TopicsGui
---- @param msg any
-function actions.test(Gui, msg, e)
-  local item_stack = Gui.player.cursor_stack
-
-  if not item_stack then
-    return
-  end
-
-  item_stack.import_stack(msg.blueprint_string)
-end
-
 return actions

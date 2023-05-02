@@ -1,6 +1,8 @@
 local gui = require("__flib__/gui")
 local on_tick_n = require("__flib__/on-tick-n")
 
+local markup_events = require("__the418_kb__/markup/renderer/events")
+
 local constants = require("__the418_kb__/constants")
 local migrations = require("__the418_kb__/scripts/migrations")
 local player_data = require("__the418_kb__/scripts/player-data")
@@ -172,6 +174,16 @@ script.on_event(defines.events.on_gui_opened, function(event)
   end
 end)
 
-script.on_event(defines.events.on_gui_elem_changed, function(event)
-  game.print(serpent.block(event.element.elem_value))
+script.on_event(defines.events.on_gui_click, function(event)
+  -- TODO proper interface to hook markup events
+  markup_events.handle_blueprint_click(event)
+
+  -- fall back to flib gui
+  local msg = gui.read_action(event)
+  if msg then
+    local Gui = player_gui.get_gui(event.player_index, msg.gui)
+    if Gui then
+      Gui:dispatch(msg, event)
+    end
+  end
 end)

@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.4.2
+Version: 0.5.0
 Date: 02. 05. 2023
+  Features:
+    - Added blueprint formatting for blueprints, blueprint books, deconstruction and upgrade planners. You can insert rich text [special-item=blueprint-string] into your topic body, and a blueprint will be rendered. Clicking on it, then, will copy that blueprint into your cursor. This might still be very finicky, though. Oh, and it's not looking good when a blueprint is in the same line as other text.
   Gui:
     - Fixed list item bullets alignment
 ---------------------------------------------------------------------------------------------------

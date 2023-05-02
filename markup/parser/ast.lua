@@ -59,7 +59,7 @@
 --- @class Blueprint
 --- @field kind "BLUEPRINT"
 --- @field value string
---- @field type "blueprint" | "blueprint-book" | "deconstruction-planner" | "upgrade-planner"
+--- @field type "blueprint" | "blueprint_book" | "deconstruction_planner" | "upgrade_planner"
 --- @field blueprint_data table
 
 --- @class FactorioRichText
