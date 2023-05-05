@@ -8,7 +8,9 @@
 
 ## What is it?
 
-This is a Factorio mod that provides a wiki-like system for documenting your Factorio world.
+Knowledge Base is a Factorio mod that provides a wiki-like system for documenting your Factorio world.
+
+<img src="pics/showcase.png" />
 
 ## Features
 
@@ -83,11 +85,11 @@ You can provide a `name` attribute to override the blueprint's name in your text
 
 ### Raw text
 
-<img src="pics/screenshot-formatting-example-source.png" width="800" />
+<img src="pics/screenshot-formatting-example-source.png" />
 
 ### Result
 
-<img src="pics/screenshot-formatting-example-result.png" width="800" />
+<img src="pics/screenshot-formatting-example-result.png" />
 
 ## Installation
 
