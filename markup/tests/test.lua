@@ -1117,4 +1117,58 @@ let x = 1
       })
     end)
   end)
+
+  describe("xml parser", function()
+    local xml_parser = require("__the418_kb__/markup/parser/xml")
+
+    it("should work", function()
+      local result, len =
+        xml_parser.parse('<special-item name="my blueprint">bpstring</special-item>\nother text')
+
+      assert.are.same(result, {
+        {
+          label = "special-item",
+          xarg = {
+            name = "my blueprint",
+          },
+          "bpstring",
+        },
+      })
+      assert.are.same(len, 57)
+    end)
+
+    it("should remove whitespace and newlines from text", function()
+      local result, len =
+        xml_parser.parse('<special-item name="my blueprint">\n bpstring\n</special-item>')
+
+      assert.are.same(result, {
+        {
+          label = "special-item",
+          xarg = {
+            name = "my blueprint",
+          },
+          "bpstring",
+        },
+      })
+      assert.are.same(len, 60)
+    end)
+
+    it("should not break if we pass in text", function()
+      local result, len = xml_parser.parse("text www")
+
+      assert.are.same(result, { "text www" })
+      assert.are.same(len, 8)
+    end)
+
+    it("should not crash if the parser crashes", function()
+      local result, len = xml_parser.parse([[<parent>
+      <child>content</child>
+      <child2>
+      <grandchild>content</grandchild>
+  </parent>]])
+
+      assert.are.same(result, {})
+      assert.are.same(len, 0)
+    end)
+  end)
 end)

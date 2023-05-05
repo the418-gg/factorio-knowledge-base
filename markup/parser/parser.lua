@@ -57,6 +57,8 @@ function Parser:parse_block()
     return self:parse_list("UNORDERED")
   elseif self.current_token.kind == token.KIND.ListItemOrdered then
     return self:parse_list("ORDERED")
+  elseif self.current_token.kind == token.KIND.SpecialItemBlock then
+    return self:parse_special_item_block()
   elseif self.current_token.kind == token.KIND.HardBreak then
     self:next_token()
   elseif self.current_token.kind == token.KIND.HorizontalRule then
@@ -254,6 +256,32 @@ function Parser:parse_inline_content_block(till_hard_break, till_token)
 end
 
 --- @private
+--- @return BlueprintBlock?
+function Parser:parse_special_item_block()
+  local name = self.current_token.value.name
+  local value = self.current_token.value.value
+  -- Blueprint. TODO cannot unit test this! Need to mock `game` or use dependency injection
+  local decoded_bpstring = game.decode_string(string.sub(value, 2)) -- need to ignore the first (version) byte
+  local parsed_blueprint = decoded_bpstring and game.json_to_table(decoded_bpstring) --[[@as table]]
+    or nil
+
+  self:next_token()
+  if not parsed_blueprint then
+    return nil
+  end
+
+  local type = next(parsed_blueprint)
+
+  return {
+    kind = ast.KIND.BlueprintBlock,
+    caption = name,
+    value = value,
+    type = type,
+    blueprint_data = parsed_blueprint,
+  }
+end
+
+--- @private
 --- @return InlineContent?
 function Parser:parse_inline_content()
   if self.current_token.kind == token.KIND.Text then
@@ -292,7 +320,7 @@ function Parser:parse_rich_text()
 
     -- Blueprint
     return {
-      kind = ast.KIND.Blueprint,
+      kind = ast.KIND.BlueprintInline,
       value = value,
       type = type,
       blueprint_data = parsed_blueprint,

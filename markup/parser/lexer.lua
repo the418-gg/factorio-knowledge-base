@@ -1,3 +1,4 @@
+local xml = require("__the418_kb__/markup/parser/xml")
 local token = require("__the418_kb__/markup/parser/token")
 
 --- @class Lexer
@@ -46,6 +47,8 @@ function Lexer:get_current_token(is_escaped)
     return self:try_read_ordered_list_item()
   elseif self.is_block_level_context and self.current_char == "\n" then
     return { kind = token.KIND.HardBreak }
+  elseif self.is_block_level_context and self.current_char == "<" then
+    return self:try_read_xml_style_block()
   elseif self.current_char == "\n" then
     if is_escaped then
       return { kind = token.KIND.LineBreak }
@@ -225,9 +228,32 @@ end
 
 --- @private
 --- @return Token
+function Lexer:try_read_xml_style_block()
+  local parsed, len = xml.parse(string.sub(self.input, self.position))
+  local node = parsed[1]
+
+  if len == 0 or not node or node.label ~= "special-item" then
+    return {
+      kind = token.KIND.Text,
+      value = self:read_text(),
+    }
+  end
+
+  local name = (node.xarg or {}).name
+  self.position = self.position + len - 2
+  self.read_position = self.position + 1
+  self:read_char()
+  return {
+    kind = token.KIND.SpecialItemBlock,
+    value = { name = name, value = node[1] },
+  }
+end
+
+--- @private
+--- @return Token
 function Lexer:try_read_rich_text_item()
   local key, value =
-    string.match(string.sub(self.input, self.position), "%[([%a%-]+)=([^\n^%]]+)%]")
+    string.match(string.sub(self.input, self.position), "^%[([%a%-]+)=([^\n^%]]+)%]")
 
   if key and value then
     self.position = self.position + #key + #value + 2 -- ([ + #key + = + #value + ]) - 1
