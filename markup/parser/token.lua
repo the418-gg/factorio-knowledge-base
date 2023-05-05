@@ -20,6 +20,7 @@ token.KIND = {
   ListItemUnordered = "-",
   ListItemOrdered = "__LIST_ITEM_ORDERED__",
   CodeBlock = "```",
+  SpecialItemBlock = "__SPECIAL_ITEM__",
   -- Inline-level tokens
   EmphasisBold = "**",
   CodeInline = "`",

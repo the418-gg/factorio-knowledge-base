@@ -94,7 +94,7 @@ function helpers.make_special_item_sprite_icons(type, data)
 
   return {
     type = "flow",
-    -- ignored_by_interaction = true,
+    ignored_by_interaction = true,
     style_mods = {
       width = 64,
       height = 64,

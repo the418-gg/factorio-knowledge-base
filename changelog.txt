@@ -1,11 +1,13 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.6.0
 Date: 05. 05. 2023
-  Bugfixes:
-    - Fixed a crash when using virtual signals as blueprint icons
+  Major Features:
+    - Added separate formatting of inline blueprints and blueprint blocks.
   Features:
     - Added icons for blueprint books
     - Improved formatting of blueprint icons
+  Bugfixes:
+    - Fixed a crash when using virtual signals as blueprint icons
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.0
 Date: 02. 05. 2023

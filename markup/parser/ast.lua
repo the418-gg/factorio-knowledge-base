@@ -33,7 +33,14 @@
 --- @class CodeBlock
 --- @field text string
 
---- @alias Block Heading | Paragraph | List | HorizontalRule | CodeBlock
+--- @class BlueprintBlock
+--- @field kind "BLUEPRINT_BLOCK"
+--- @field caption string?
+--- @field value string
+--- @field type SpecialItemType
+--- @field blueprint_data table
+
+--- @alias Block Heading | Paragraph | List | HorizontalRule | CodeBlock | BlueprintBlock
 
 --- @class Text
 --- @field kind "TEXT"
@@ -56,10 +63,10 @@
 --- @class LineBreak
 --- @field kind "LINE_BREAK"
 
---- @class Blueprint
---- @field kind "BLUEPRINT"
+--- @class BlueprintInline
+--- @field kind "BLUEPRINT_INLINE"
 --- @field value string
---- @field type "blueprint" | "blueprint_book" | "deconstruction_planner" | "upgrade_planner"
+--- @field type SpecialItemType
 --- @field blueprint_data table
 
 --- @class FactorioRichText
@@ -67,7 +74,7 @@
 --- @field key string
 --- @field value string
 
---- @alias InlineContent Text | EmphasisedText | CodeInline | SoftBreak | LineBreak | Blueprint | FactorioRichText
+--- @alias InlineContent Text | EmphasisedText | CodeInline | SoftBreak | LineBreak | BlueprintInline | FactorioRichText
 
 --- @alias AST Block[]
 
@@ -78,6 +85,7 @@ ast.KIND = {
   Heading = "HEADING",
   List = "LIST",
   ListItem = "LIST_ITEM",
+  BlueprintBlock = "BLUEPRINT_BLOCK",
   Text = "TEXT",
   EmphasisedText = "EMPHASISED_TEXT",
   SoftBreak = "SOFT_BREAK",
@@ -86,7 +94,7 @@ ast.KIND = {
   CodeInline = "CODE_INLINE",
   CodeBlock = "CODE_BLOCK",
   FactorioRichText = "RICH_TEXT",
-  Blueprint = "BLUEPRINT",
+  BlueprintInline = "BLUEPRINT_INLINE",
 }
 
 return ast

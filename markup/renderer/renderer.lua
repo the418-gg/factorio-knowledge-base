@@ -47,6 +47,8 @@ function renderer.block(block)
     return renderer.horizontal_rule()
   elseif block.kind == ast.KIND.CodeBlock then
     return renderer.code_block(block --[[@as CodeBlock]])
+  elseif block.kind == ast.KIND.BlueprintBlock then
+    return renderer.blueprint_block(block --[[@as BlueprintBlock]])
   else
     -- TODO
     return {}
@@ -186,6 +188,42 @@ function renderer.code_block(block)
 end
 
 --- @private
+--- @param block BlueprintBlock
+--- @return LuaGuiElement
+function renderer.blueprint_block(block)
+  return {
+    type = "flow",
+    direction = "vertical",
+    style_mods = {
+      horizontal_align = "center",
+      vertical_spacing = 4,
+    },
+    {
+      type = "sprite-button",
+      style = "inventory_slot",
+      sprite = blueprint_sprite_map[block.type] or "item/blueprint",
+      style_mods = {
+        padding = 4,
+        width = 80,
+        height = 80,
+      },
+      tags = { ["the418_kb__markup__blueprint_string"] = block.value },
+      helpers.make_special_item_sprite_icons(block.type, block.blueprint_data),
+    },
+    {
+      type = "label",
+      caption = block.caption or block.blueprint_data[block.type].label,
+      style_mods = {
+        width = 80,
+        single_line = false,
+        horizontal_align = "center",
+        horizontally_squashable = true,
+      },
+    },
+  }
+end
+
+--- @private
 --- @param children InlineContent[]
 --- @param style_mods table<string, any>?
 --- @return LuaGuiElement
@@ -255,37 +293,14 @@ function renderer.inline_content(content, style_mods)
         style_mods = style_mods,
       },
     }
-  elseif content.kind == ast.KIND.Blueprint then
+  elseif content.kind == ast.KIND.BlueprintInline then
     return {
       {
-        type = "flow",
-        direction = "vertical",
-        style_mods = {
-          horizontal_align = "center",
-          vertical_spacing = 4,
-        },
-        {
-          type = "sprite-button",
-          style = "inventory_slot",
-          sprite = blueprint_sprite_map[content.type] or "item/blueprint",
-          style_mods = {
-            padding = 4,
-            width = 80,
-            height = 80,
-          },
-          tags = { ["the418_kb__markup__blueprint_string"] = content.value },
-          helpers.make_special_item_sprite_icons(content.type, content.blueprint_data),
-        },
-        {
-          type = "label",
-          caption = content.blueprint_data[content.type].label,
-          style_mods = {
-            width = 80,
-            single_line = false,
-            horizontal_align = "center",
-            horizontally_squashable = true,
-          },
-        },
+        type = "label",
+        style = "the418_kb__markup__inline__text",
+        style_mods = style_mods,
+        caption = "[special-item=" .. content.value .. "]",
+        tags = { ["the418_kb__markup__blueprint_string"] = content.value },
       },
     }
   elseif content.kind == ast.KIND.SoftBreak then
