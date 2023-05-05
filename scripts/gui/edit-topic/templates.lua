@@ -25,7 +25,7 @@ function templates.render(Topic, available_parents, currently_selected_topic_id)
     {
       type = "frame",
       name = "the418_kb__edit_topic_window",
-      style_mods = { width = 448 },
+      style_mods = { width = 848 },
       direction = "vertical",
       ref = { "window" },
       visible = false,

@@ -239,12 +239,10 @@ function Lexer:try_read_xml_style_block()
     }
   end
 
-  game.print("parsign xml, len = " .. len)
   local name = (node.xarg or {}).name
   self.position = self.position + len - 2
   self.read_position = self.position + 1
   self:read_char()
-  game.print("parsed")
   return {
     kind = token.KIND.SpecialItemBlock,
     value = { name = name, value = node[1] },

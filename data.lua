@@ -153,8 +153,8 @@ styles.the418_kb__label_button_disabled = {
 
 styles.the418_kb__edit_topic_textbox = {
   type = "textbox_style",
-  height = 200,
-  width = 400,
+  height = 800,
+  width = 800,
   rich_text_setting = "disabled",
 }
 
