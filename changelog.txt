@@ -3,6 +3,7 @@ Version: 0.6.0
 Date: 05. 05. 2023
   Major Features:
     - Added separate formatting of inline blueprints and blueprint blocks.
+    - Added documentation.
   Features:
     - Added icons for blueprint books
     - Improved formatting of blueprint icons
