@@ -1,6 +1,6 @@
 {
   "name": "the418_kb",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "title": "418 Industries: Knowledge Base",
   "author": "akxcv",
   "contact": "https://github.com/the418-gg/factorio-knowledge-base",
@@ -13,7 +13,8 @@
       "markup/factoriomark-0.1.0-1.rockspec",
       "markup/tests",
       ".github",
-      "stylua.toml"
+      "stylua.toml",
+      "pics"
     ]
   }
 }

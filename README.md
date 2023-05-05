@@ -10,6 +10,8 @@ A wiki-like system for documenting massive Factorio bases. Very raw right now, j
 
 [Download on the Mod Portal.](https://mods.factorio.com/mod/the418_kb)
 
+<img src="pics/kb_512.png" width="256" />
+
 ## Running tests
 
 ```sh
