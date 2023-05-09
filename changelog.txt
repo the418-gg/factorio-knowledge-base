@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.1
+Date: 09. 05. 2023
+  Bugfixes:
+    - Fixed a crash related to blueprint books, upgrade and desconstruction planners not having icons
+    - Fixed a crash when inserting an empty `<blueprint-book>` block
+---------------------------------------------------------------------------------------------------
 Version: 0.6.0
 Date: 05. 05. 2023
   Major Features:

@@ -217,9 +217,7 @@ function Parser:parse_inline_content_block(till_hard_break, till_token)
         -- start bold block
         self:next_token()
         for _, c in
-          pairs(
-            self:parse_inline_content_block(till_hard_break, { kind = token.KIND.EmphasisBold })
-          )
+          pairs(self:parse_inline_content_block(till_hard_break, { kind = token.KIND.EmphasisBold }))
         do
           table.insert(block, c)
         end
@@ -260,12 +258,17 @@ end
 function Parser:parse_special_item_block()
   local name = self.current_token.value.name
   local value = self.current_token.value.value
+  self:next_token()
+
+  if not value then
+    return nil
+  end
+
   -- Blueprint. TODO cannot unit test this! Need to mock `game` or use dependency injection
   local decoded_bpstring = game.decode_string(string.sub(value, 2)) -- need to ignore the first (version) byte
   local parsed_blueprint = decoded_bpstring and game.json_to_table(decoded_bpstring) --[[@as table]]
     or nil
 
-  self:next_token()
   if not parsed_blueprint then
     return nil
   end

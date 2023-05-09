@@ -121,11 +121,18 @@ function helpers.get_special_item_icons(type, data)
       table.insert(icons, helpers.make_sprite_path(icon_data.signal.type, icon_data.signal.name))
     end
   elseif type == "blueprint_book" then
+    if not data.blueprint_book.icons then
+      return icons
+    end
+
     for _, icon_data in pairs(data.blueprint_book.icons) do
       table.insert(icons, helpers.make_sprite_path(icon_data.signal.type, icon_data.signal.name))
     end
   elseif type == "deconstruction_planner" then
     local settings = data.deconstruction_planner.settings
+    if not settings then
+      return icons
+    end
 
     if settings.entity_filters then
       for _, entity_filter in pairs(settings.entity_filters) do
@@ -139,6 +146,9 @@ function helpers.get_special_item_icons(type, data)
       end
     end
   elseif type == "upgrade_planner" then
+    if not data.upgrade_planner.settings then
+      return icons
+    end
     for _, mapper in pairs(data.upgrade_planner.settings.mappers) do
       table.insert(icons, helpers.make_sprite_path(mapper.to.type, mapper.to.name))
     end
