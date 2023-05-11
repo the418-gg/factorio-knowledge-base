@@ -10,7 +10,7 @@ local markup = {}
 --- @return AST
 function markup.parse(input)
   local Lexer = lexer.new(input)
-  local Parser = parser.new(Lexer)
+  local Parser = parser.new(game, Lexer)
 
   return Parser:parse_document()
 end
@@ -32,7 +32,7 @@ local tasks = {}
 --- @return ParseTask
 function tasks.create(input)
   local Lexer = lexer.new(input)
-  local Parser = parser.new(Lexer)
+  local Parser = parser.new(game, Lexer)
 
   return { ast = {}, done = false, parser = Parser }
 end

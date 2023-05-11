@@ -1,4 +1,7 @@
 local serpent = require("serpent")
+local base64 = require("./tests/support/base64")
+local cjson = require("cjson.safe")
+local zlib = require("zlib")
 
 do
   local paths = {}
@@ -63,10 +66,30 @@ table.insert(package.searchers, mod_searcher)
 local lexer = require("__the418_kb__/markup/parser/lexer")
 local parser = require("__the418_kb__/markup/parser/parser")
 
+--- @type SpecialItemDecoder
+local special_item_decoder = {}
+
+function special_item_decoder.decode_string(input)
+  local base64_decoded = base64.dec(input)
+
+  local stream = zlib.inflate()
+  local success, deflated = pcall(function()
+    return stream(base64_decoded, "sync")
+  end)
+
+  if success then
+    return deflated
+  end
+end
+
+function special_item_decoder.json_to_table(json)
+  return cjson.decode(json)
+end
+
 --- @param input string
 --- @return AST
 local function parse(input)
-  return parser.new(lexer.new(input)):parse_document()
+  return parser.new(special_item_decoder, lexer.new(input)):parse_document()
 end
 
 describe("FactorioMark", function()
@@ -1079,6 +1102,277 @@ let x = 1
           },
         },
       })
+    end)
+  end)
+
+  describe("special items", function()
+    it("outputs nothing when content is empty", function()
+      local ast = parse("<special-item></special-item>")
+
+      assert.are.same(ast, {})
+    end)
+
+    it("outputs nothing when content is invalid #only", function()
+      local ast = parse("<special-item>any content that is not a blueprint</special-item>")
+
+      assert.are.same(ast, {})
+    end)
+
+    describe("blueprints", function()
+      it("works", function()
+        local ast = parse([[<special-item>
+0eNqVlMFuwyAMhl8l8plIhbRNw3G7TTvsPk0Tad0OiUAEZFoU5d0H6VRFG9LKgYNB/2f/BjNBqwbsrdQe+ATyaLQD/jqBkxctVNzzY4/AQXrsgIAWXYyskApmAlKf8As4ncm/EmmNLo3FlYzdIVPy8uFLI1XZCmtxnbW6Rz60Vh6F9n/l2/mNAGovvcSr6SUY3/XQtWiDqxvF+WA41rH4JtAbF1RGx7TRfk1gBN7MsaBfEHaDRIYunTd9gtD8EEjIJa4H8IDWF49jb9E5SKCrzPooTRW4zaVUKcoul7JLUfa5lDpFqXMpyYs7ZFJYsrtNLiXZXbrJxSTbS2nOYwyM9Wt8QqGLFzGo4hk7I3UY5DA/y7Tx1S9CQIk2zBmHs3CnsM4i7H2idQuGHei2bli9b9jmULF5/gYdsX1F
+</special-item>]])
+
+        assert.are.same(ast, {
+          {
+            kind = "BLUEPRINT_BLOCK",
+            caption = nil,
+            value = "0eNqVlMFuwyAMhl8l8plIhbRNw3G7TTvsPk0Tad0OiUAEZFoU5d0H6VRFG9LKgYNB/2f/BjNBqwbsrdQe+ATyaLQD/jqBkxctVNzzY4/AQXrsgIAWXYyskApmAlKf8As4ncm/EmmNLo3FlYzdIVPy8uFLI1XZCmtxnbW6Rz60Vh6F9n/l2/mNAGovvcSr6SUY3/XQtWiDqxvF+WA41rH4JtAbF1RGx7TRfk1gBN7MsaBfEHaDRIYunTd9gtD8EEjIJa4H8IDWF49jb9E5SKCrzPooTRW4zaVUKcoul7JLUfa5lDpFqXMpyYs7ZFJYsrtNLiXZXbrJxSTbS2nOYwyM9Wt8QqGLFzGo4hk7I3UY5DA/y7Tx1S9CQIk2zBmHs3CnsM4i7H2idQuGHei2bli9b9jmULF5/gYdsX1F",
+            type = "blueprint",
+            blueprint_data = {
+              blueprint = {
+                icons = {
+                  {
+                    signal = {
+                      type = "item",
+                      name = "rail",
+                    },
+                    index = 1,
+                  },
+                  {
+                    signal = {
+                      type = "item",
+                      name = "iron-ore",
+                    },
+                    index = 2,
+                  },
+                  {
+                    signal = {
+                      type = "item",
+                      name = "light-oil-barrel",
+                    },
+                    index = 3,
+                  },
+                  {
+                    signal = {
+                      type = "item",
+                      name = "lubricant-barrel",
+                    },
+                    index = 4,
+                  },
+                },
+                entities = {
+                  {
+                    entity_number = 1,
+                    name = "straight-rail",
+                    position = {
+                      x = 17,
+                      y = 9,
+                    },
+                  },
+                  {
+                    entity_number = 2,
+                    name = "train-stop",
+                    position = {
+                      x = 19,
+                      y = 9,
+                    },
+                    station = "Bert Cypress",
+                  },
+                  {
+                    entity_number = 3,
+                    name = "straight-rail",
+                    position = {
+                      x = 17,
+                      y = 11,
+                    },
+                  },
+                  {
+                    entity_number = 4,
+                    name = "straight-rail",
+                    position = {
+                      x = 17,
+                      y = 13,
+                    },
+                  },
+                  {
+                    entity_number = 5,
+                    name = "straight-rail",
+                    position = {
+                      x = 17,
+                      y = 15,
+                    },
+                  },
+                  {
+                    entity_number = 6,
+                    name = "straight-rail",
+                    position = {
+                      x = 17,
+                      y = 17,
+                    },
+                  },
+                  {
+                    entity_number = 7,
+                    name = "straight-rail",
+                    position = {
+                      x = 17,
+                      y = 19,
+                    },
+                  },
+                  {
+                    entity_number = 8,
+                    name = "straight-rail",
+                    position = {
+                      x = 17,
+                      y = 21,
+                    },
+                  },
+                  {
+                    entity_number = 9,
+                    name = "straight-rail",
+                    position = {
+                      x = 17,
+                      y = 23,
+                    },
+                  },
+                  {
+                    entity_number = 10,
+                    name = "straight-rail",
+                    position = {
+                      x = 17,
+                      y = 25,
+                    },
+                  },
+                  {
+                    entity_number = 11,
+                    name = "train-stop",
+                    position = {
+                      x = 19,
+                      y = 25,
+                    },
+                    station = "Jean Paul Lemoine",
+                  },
+                },
+                item = "blueprint",
+                label = "fasdfasfa",
+                version = 281479276920832,
+              },
+            },
+          },
+        })
+      end)
+    end)
+
+    describe("blueprint books", function()
+      it("works", function()
+        local ast = parse([[<special-item name="test book">
+0eNpFjVEKgzAQRK8S9ltB01I1VylFYty2S2MiJtEWyd2blIKf8/bN7A6DDjgvZHw/WPsCsR/EgbjeCiCPE4gDlz+xAC0H1PmQIjOkkG12Yy6oJ1PW6mSQsiaP7ODoYaTO6/4zYyrddaAxKUZOOaoljFha0hBTzYz4BlHH9FwqTyv2f1QVsOLiyBoQvK3PTcebS8er9sRj/AJlYkQm
+</special-item>]])
+
+        assert.are.same(ast, {
+          {
+            kind = "BLUEPRINT_BLOCK",
+            caption = "test book",
+            value = "0eNpFjVEKgzAQRK8S9ltB01I1VylFYty2S2MiJtEWyd2blIKf8/bN7A6DDjgvZHw/WPsCsR/EgbjeCiCPE4gDlz+xAC0H1PmQIjOkkG12Yy6oJ1PW6mSQsiaP7ODoYaTO6/4zYyrddaAxKUZOOaoljFha0hBTzYz4BlHH9FwqTyv2f1QVsOLiyBoQvK3PTcebS8er9sRj/AJlYkQm",
+            type = "blueprint_book",
+            blueprint_data = {
+              blueprint_book = {
+                blueprints = {},
+                item = "blueprint-book",
+                label = "book nice wow such cool",
+                icons = {
+                  {
+                    signal = {
+                      type = "fluid",
+                      name = "crude-oil",
+                    },
+                    index = 1,
+                  },
+                },
+                active_index = 0,
+                version = 281479276920832,
+              },
+            },
+          },
+        })
+      end)
+    end)
+
+    describe("deconstruction planners", function()
+      it("works", function()
+        local ast = parse([[<special-item>
+0eNpdjt0KwjAMhd8l1xV0TvfzKiJjbkcttKm0mSij726GKOhdkvMd8s00YgicJE6D2MDdzfXMiNTOlCBi+ZKWGSxWnt3ZOkHUy2Em7j2oJRsDr4YrkpAhyyMe1JbZfPMkgPsHdvloSKxDl+Dw/uzDqHyRFRJ4bf6arT5mhlx/glPATyks+12VlNByvSmrpqj2TbGut0XOLyU0TTs=
+</special-item>]])
+
+        assert.are.same(ast, {
+          {
+            kind = "BLUEPRINT_BLOCK",
+            caption = nil,
+            value = "0eNpdjt0KwjAMhd8l1xV0TvfzKiJjbkcttKm0mSij726GKOhdkvMd8s00YgicJE6D2MDdzfXMiNTOlCBi+ZKWGSxWnt3ZOkHUy2Em7j2oJRsDr4YrkpAhyyMe1JbZfPMkgPsHdvloSKxDl+Dw/uzDqHyRFRJ4bf6arT5mhlx/glPATyks+12VlNByvSmrpqj2TbGut0XOLyU0TTs=",
+            type = "deconstruction_planner",
+            blueprint_data = {
+              deconstruction_planner = {
+                settings = {
+                  entity_filters = {
+                    {
+                      name = "iron-chest",
+                      index = 4,
+                    },
+                    {
+                      name = "steel-chest",
+                      index = 5,
+                    },
+                  },
+                  tile_selection_mode = 2,
+                },
+                item = "deconstruction-planner",
+                label = "musor",
+                version = 281479276920832,
+              },
+            },
+          },
+        })
+      end)
+    end)
+
+    describe("upgrade planners", function()
+      it("works", function()
+        local ast = parse([[<special-item>
+0eNqFjsEKwjAMhl9Fct7AVdGtryIi1WWzuKaljcMx+u6mhx08eQl/8v9JvhXeYYymx1uYDBFG0CskZLY0pqKdCQGjyMsKQ/SuzHgJCBqQ2PICFZBxpU9sHq/aUsLIcihXwP5vfLCThH+2LPX4Ad3ka2kY5edGWW+UFUzmjpM41oXoZ8Hd8VOqOLPwWk+gVdscz506nzq1bw8q5y/+21Ex
+</special-item>]])
+
+        assert.are.same(ast, {
+          {
+            kind = "BLUEPRINT_BLOCK",
+            caption = nil,
+            value = "0eNqFjsEKwjAMhl9Fct7AVdGtryIi1WWzuKaljcMx+u6mhx08eQl/8v9JvhXeYYymx1uYDBFG0CskZLY0pqKdCQGjyMsKQ/SuzHgJCBqQ2PICFZBxpU9sHq/aUsLIcihXwP5vfLCThH+2LPX4Ad3ka2kY5edGWW+UFUzmjpM41oXoZ8Hd8VOqOLPwWk+gVdscz506nzq1bw8q5y/+21Ex",
+            type = "upgrade_planner",
+            blueprint_data = {
+              upgrade_planner = {
+                settings = {
+                  mappers = {
+                    {
+                      from = {
+                        type = "entity",
+                        name = "stack-inserter",
+                      },
+                      to = {
+                        type = "entity",
+                        name = "stack-filter-inserter",
+                      },
+                      index = 1,
+                    },
+                  },
+                },
+                item = "upgrade-planner",
+                label = "improving thing",
+                version = 281479276920832,
+              },
+            },
+          },
+        })
+      end)
     end)
   end)
 

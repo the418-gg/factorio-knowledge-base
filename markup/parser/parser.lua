@@ -217,7 +217,9 @@ function Parser:parse_inline_content_block(till_hard_break, till_token)
         -- start bold block
         self:next_token()
         for _, c in
-          pairs(self:parse_inline_content_block(till_hard_break, { kind = token.KIND.EmphasisBold }))
+          pairs(
+            self:parse_inline_content_block(till_hard_break, { kind = token.KIND.EmphasisBold })
+          )
         do
           table.insert(block, c)
         end
@@ -264,9 +266,9 @@ function Parser:parse_special_item_block()
     return nil
   end
 
-  -- Blueprint. TODO cannot unit test this! Need to mock `game` or use dependency injection
-  local decoded_bpstring = game.decode_string(string.sub(value, 2)) -- need to ignore the first (version) byte
-  local parsed_blueprint = decoded_bpstring and game.json_to_table(decoded_bpstring) --[[@as table]]
+  local decoded_bpstring = self.special_item_decoder.decode_string(string.sub(value, 2)) -- need to ignore the first (version) byte
+  local parsed_blueprint = decoded_bpstring
+      and self.special_item_decoder.json_to_table(decoded_bpstring) --[[@as table]]
     or nil
 
   if not parsed_blueprint then
@@ -305,9 +307,9 @@ function Parser:parse_rich_text()
   local value = self.current_token.value.value
 
   if key == "special-item" then
-    -- Blueprint. TODO cannot unit test this! Need to mock `game` or use dependency injection
-    local decoded_bpstring = game.decode_string(string.sub(value, 2)) -- need to ignore the first (version) byte
-    local parsed_blueprint = decoded_bpstring and game.json_to_table(decoded_bpstring) --[[@as table]]
+    local decoded_bpstring = self.special_item_decoder.decode_string(string.sub(value, 2)) -- need to ignore the first (version) byte
+    local parsed_blueprint = decoded_bpstring
+        and self.special_item_decoder.json_to_table(decoded_bpstring) --[[@as table]]
       or nil
 
     if not parsed_blueprint then
@@ -353,11 +355,15 @@ end
 
 local parser = {}
 
+--- @alias SpecialItemDecoder { decode_string: (fun(input: string): string?), json_to_table: (fun(json: string): (boolean|string|number|table)?) }
+
+--- @param special_item_decoder SpecialItemDecoder
 --- @param lexer Lexer
 --- @return Parser
-function parser.new(lexer)
+function parser.new(special_item_decoder, lexer)
   --- @class Parser
   local self = {
+    special_item_decoder = special_item_decoder,
     lexer = lexer,
     current_token = { kind = token.KIND.EOF }, --- @type Token
     peek_token = { kind = token.KIND.EOF }, --- @type Token
